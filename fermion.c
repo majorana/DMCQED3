@@ -12,6 +12,7 @@
 #include "fermion.h"
 
 complex double fdet[GRIDPOINTS][GRIDPOINTS];
+complex double mtemp[GRIDPOINTS][GRIDPOINTS];
 complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 
@@ -26,6 +27,14 @@ complex double (*Minv_spare)[GRIDPOINTS];
 complex double det_ratio_At(const int i) {
 // the i-th row
 	complex double rdet;
+	int j;
+	//fdet[i][tp[i]] = exp(-g_mu)*Ut[i];
+
+	rdet = 0.0;
+	for(j=0;j<GRIDPOINTS;j++) {
+		//printf("%.5f, %.5f\n", Minv[j][i]);
+		//rdet = rdet + fdet[i][j]*Minv[j][i];
+	}
 	rdet = exp(-g_mu)*Ut[i]*Minv[tp[i]][i] - Minv[i][i] - g_t*(Ux[i]*Minv[xp[i]][i] + Uy[i]*Minv[yp[i]][i] + cconj(Ux[xm[i]])*Minv[xm[i]][i] + cconj(Uy[ym[i]])*Minv[ym[i]][i]);
 	return rdet;
 }
@@ -163,7 +172,7 @@ void print_fermion_mat() {
 	
 	//fp = fopen("fmat_real.dat", "w");
 	
-	printf("\n Output fermion determinant...\n");
+	printf("\n Output fermion determinant...\n Real part:\n");
 	set_zero(basis);
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
@@ -174,7 +183,7 @@ void print_fermion_mat() {
 		{
 			x = out[j];
 			//fprintf(fp, "%f  ", creal(x));
-			printf("%f  ", creal(x));
+			printf("%.3f  ", creal(x));
 
 		}
 		//fprintf(fp, "%f\n", creal(out[GRIDPOINTS-1]));
@@ -185,7 +194,8 @@ void print_fermion_mat() {
 	//fclose(fp);
 
 	//fp = fopen("fmat_imag.dat", "w");
-
+	
+	printf("Imaginary part:\n");
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
 		basis[i] = 1.0;
@@ -195,7 +205,7 @@ void print_fermion_mat() {
 		{
 			x = out[j];
 			//fprintf(fp, "%f  ", cimag(x));
-			printf("%f  ", cimag(x));
+			printf("%.3f  ", cimag(x));
 		}
 		//fprintf(fp, "%f\n", cimag(out[GRIDPOINTS-1]));
 		printf("%f\n", cimag(out[GRIDPOINTS-1]));
@@ -207,16 +217,50 @@ void print_fermion_mat() {
 }
 
 
-void get_det_mat()
+complex double get_fermion_mat()
 {
-	int i;
+	int i, j;
+	complex double r;
 	complex double basis[GRIDPOINTS];
 	set_zero(basis);
 	for(i = 0; i<GRIDPOINTS;i++)
 	{
-		basis[i] = 1.0;
-		fermion(fdet[i], basis);
-		basis[i] = 0.0;
+		set_zero(fdet[i]);
+		fdet[i][tp[i]] = exp(-g_mu)*Ut[i];
+		fdet[i][i] = -1.0;
+		fdet[i][xp[i]] = -g_t;
+		fdet[i][xm[i]] = -g_t;
+		fdet[i][yp[i]] = -g_t;
+		fdet[i][ym[i]] = -g_t;
 	}
-	print_fermion_mat();
+
+	for(i = 0; i<GRIDPOINTS;i++) {
+		//printf("{");
+		for(j = 0; j<GRIDPOINTS; j++) {
+			Minv1[i][j] =  fdet[i][j];
+			//printf("%.3f,  ", creal(fdet[i][j]));
+		}
+		//printf("%.3f", creal(fdet[i][j]));
+		//printf("},\n");
+	}
+	printf("------------------\n");
+	for(i = 0; i<GRIDPOINTS;i++) {
+		//printf("{");
+		for(j = 0; j<GRIDPOINTS-1; j++) {
+			//printf("%.3f,  ", cimag(fdet[i][j]));
+		}
+		//printf("%.3f", cimag(fdet[i][j]));
+		//printf("},\n");
+	}
+	r = matrix_det(*fdet);
+	printf("Det: %.12f, %.12f\n", creal(r), cimag(r));
+	matrix_inverse(*Minv1);
+	for(i = 0; i<GRIDPOINTS;i++) {
+		for(j = 0; j<GRIDPOINTS; j++) {
+			//printf("%.3f  ", creal(Minv1[i][j]));
+		}
+		//printf("\n");
+	}
+	Minv = Minv1;
+	return r;
 }

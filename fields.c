@@ -13,8 +13,6 @@
 double At[GRIDPOINTS], Ax[GRIDPOINTS], Ay[GRIDPOINTS];         //Non-compact real-valued gauge fields
 complex double Ut[GRIDPOINTS], Ux[GRIDPOINTS], Uy[GRIDPOINTS];   //Compact lattice gauge fields: link = exp(I*gauge)
 
-double s_g, s_g_old;
-
 double S_Gtx(int i)
 {
 	return -beta0*cos(At[i] + Ax[tp[i]] - At[xp[i]] - Ax[i]);

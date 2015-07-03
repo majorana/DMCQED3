@@ -152,7 +152,7 @@ void print_vector_r(double *v)
 	for(i = 0; i<GRIDPOINTS; i++) {
 		printf("%.3f,", v[i]);
 	}
-	printf("\n\n");
+	printf("\n");
 }
 
 double max_r(double *v)
@@ -270,7 +270,7 @@ int matrix_inverse(complex double *mat)
 
    	info1 = LAPACKE_zgetrf(LAPACK_ROW_MAJOR, n, n, mat, lda, ipiv);
 	info2 = LAPACKE_zgetri(LAPACK_ROW_MAJOR, n, mat, lda, ipiv);
-	
+
 	if (info1 || info2) 
 		return 1;
 	else
@@ -292,6 +292,26 @@ double matrix_det_r(double *mat)
 
 	for(i = 0; i<n; i++) {
 		det *= mat[i*GRIDPOINTS + i];
+	}
+	return det;
+}
+
+complex double matrix_det(complex double *mat)
+// overall sign is not calculated
+{
+	int i, j;
+	complex double det = 1.0;
+	lapack_int n, lda, info;
+   	lapack_int ipiv[GRIDPOINTS];
+
+   	n = GRIDPOINTS;
+   	lda = GRIDPOINTS;
+
+   	info = LAPACKE_zgetrf(LAPACK_ROW_MAJOR, n, n, mat, lda, ipiv);
+
+	for(i = 0; i<n; i++) {
+		//printf("(%.4f)+I*(%.4f),\n", creal(mat[i*GRIDPOINTS + i]), cimag(mat[i*GRIDPOINTS + i]));
+		det = det*mat[i*GRIDPOINTS + i];
 	}
 	return det;
 }

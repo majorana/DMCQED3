@@ -18,4 +18,6 @@ void update_inverse_At(const int i);
 
 void update_inverse_Axy(const int i); 
 
+complex double get_fermion_mat();
+
 #endif

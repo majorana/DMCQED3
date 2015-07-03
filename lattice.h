@@ -6,8 +6,8 @@
 /***********************************************/    
 
 #define Lx (3)                                       
-#define Ly (1)                                      
-#define Lt (1)
+#define Ly (3)                                      
+#define Lt (3)
 #define GRIDPOINTS (Lx*Ly*Lt)                           //Total number of lattice sites
 
 

@@ -7,6 +7,7 @@
 #include "mc.h"
 #include "fields.h"
 
+#include "fermion.h"
 #include "linalg.h"
 
 /* global variables */
@@ -29,15 +30,26 @@ int main(int argc, char **argv)
 	int i, j, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
+	complex double det1, det2, detr;
 
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
   	/* Initialize the lattice geometry */
   	init_lattice(Lx, Ly, Lt);
   	/* Initialize the fields */
-  	hotstart();
+  	coldstart();
   	/* Print out the run parameters */
   	echo_sim_params();
+	
+	det1 = get_fermion_mat();
+	At[12] = 2.5;
+	calculatelinkvars();
+	detr = det_ratio_At(12);
+	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
+	det2 = get_fermion_mat();
+	printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
+
+	return 0;
 
   	/* thermalization */
   	mc_iter = 0; //Counts the total number of calls to the update() routine
