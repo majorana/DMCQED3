@@ -3,6 +3,7 @@
 
 /**********************************************************************************************/
 /*** Implementation of the fermion single-particle operator
+ * and quick updates of the propagator matrix
 **********************************************************************************************/
 
 #include "linalg.h"

@@ -34,17 +34,17 @@ void update() //Basic HMC update step
 		Ut[i] = cos(At[i]) + I*sin(At[i]);
 		S1 = localSt(i);
 
-		d = det_ratio_At(i);
+		d = 1.0; //det_ratio_At(i);
 		prob = cconj(d)*d*exp(S0-S1);
  	 	if(prob >= 1) {
     		R += 1;
-			update_inverse_At(i);
+			//update_inverse_At(i);
   		}
   		else {
     		ranlxd(r,1);
     		if(r[0] < prob) {
       			R += 1;
-				update_inverse_At(i);
+				//update_inverse_At(i);
     		}
     		else {
       		// reject the change, get the old values for A
@@ -71,17 +71,17 @@ void update() //Basic HMC update step
 		
 		S1 = localSxy(i);
 
-		d = det_ratio_Axy(i);
+		d = 1.0; //det_ratio_Axy(i);
 		prob = cconj(d)*d*exp(S0-S1);
  	 	if(prob >= 1) {
     		R += 1;
-			update_inverse_Axy(i);
+			//update_inverse_Axy(i);
   		}
   		else {
     		ranlxd(r,1);
     		if(r[0] < prob) {
       			R += 1;
-				update_inverse_Axy(i);
+				//update_inverse_Axy(i);
     		}
     		else {
       		// reject the change, get the old values for A

@@ -10,6 +10,7 @@
 #include "rand/ranlxd.h"
 #include "fermion.h"
 
+complex double fdet[GRIDPOINTS][GRIDPOINTS];
 complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 
@@ -140,4 +141,80 @@ void fermion(complex double *out, complex double *in)
 }
 
 
+void init_M()
+{
+	// M1 = matrix_inv
+	Minv = Minv1;
+	Minv_spare = Minv2;
+}
 
+/* ****************************************************************************************
+ * Test routines 
+ * ****************************************************************************************
+ */
+void print_fermion_mat() {
+	int i, j;
+	complex double x;
+	complex double basis[GRIDPOINTS];
+	complex double out[GRIDPOINTS];
+	complex double temp[GRIDPOINTS];
+	FILE *fp;
+	
+	//fp = fopen("fmat_real.dat", "w");
+	
+	printf("\n Output fermion determinant...\n");
+	set_zero(basis);
+	for(i = 0; i<GRIDPOINTS; i++) 
+	{
+		basis[i] = 1.0;
+		fermion_fp(out, temp, basis);
+		//printf("{");
+		for(j = 0; j < GRIDPOINTS-1; j++)
+		{
+			x = out[j];
+			//fprintf(fp, "%f  ", creal(x));
+			printf("%f  ", creal(x));
+
+		}
+		fprintf(fp, "%f\n", creal(out[GRIDPOINTS-1]));
+		printf("%f\n", creal(out[GRIDPOINTS-1]));
+		//printf("},");
+		basis[i] = 0.0;
+	}
+	//fclose(fp);
+
+	//fp = fopen("fmat_imag.dat", "w");
+
+	for(i = 0; i<GRIDPOINTS; i++) 
+	{
+		basis[i] = 1.0;
+		fermion_fp(out, temp, basis);
+		//printf("{");
+		for(j = 0; j < GRIDPOINTS-1; j++)
+		{
+			x = out[j];
+			//fprintf(fp, "%f  ", cimag(x));
+			printf("%f  ", cimag(x));
+		}
+		//fprintf(fp, "%f\n", cimag(out[GRIDPOINTS-1]));
+		printf("%f\n", cimag(out[GRIDPOINTS-1]));
+
+		//printf("},");
+		basis[i] = 0.0;
+	}
+	//fclose(fp);
+}
+
+
+void get_det_mat()
+{
+	int i;
+	complex double basis[GRIDPOINTS];
+	set_zero(basis);
+	for(i = 0; i<GRIDPOINTS;i++)
+	{
+		basis[i] = 1.0;
+		fermion(fdet[i], basis);
+	}
+	print_fermion_mat();
+}

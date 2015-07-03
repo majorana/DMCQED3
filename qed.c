@@ -11,8 +11,8 @@
 double g_mu = 1.0;
 double g_t = 1.0;
 
-int g_thermalize   = 100;   //Number of MC updates for thermalization
-int g_measurements = 200;    //Number of measurements (statistically independent configurations)
+int g_thermalize   = 200;   //Number of MC updates for thermalization
+int g_measurements = 400;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  2;    //Number of MC updates between the measurements
 
 /* extern in fields.h   */
@@ -63,11 +63,10 @@ int main(int argc, char **argv)
   	};
  
   	/* Some output for diagnostics */
-  	total_updates = g_measurements*(g_intermediate + 1);
+  	total_updates = g_measurements*(g_intermediate + 1)*GRIDPOINTS;
   	printf("\n\n Algorithm performance:\n");
-  	printf("\t Acceptance rate:             %2.2lf\n", (double)accepted/(double)total_updates);
+  	printf("\t Acceptance rate:             %.3f\n", (double)R/(double)total_updates);
 
-  	system("PAUSE");
   	return 0;
 }
 
@@ -75,7 +74,8 @@ void echo_sim_params()
 {
  	printf("Quantum Monte-Carlo for U(1) gauge theory with spinor Fermi surface\n\n");
  	printf("Run parameters (adjust in qed.c !!!):\n");
- 	printf("\t Beta:                            %2.4lf\n",  beta);
+ 	printf("\t Beta0:                            %2.4lf\n",  beta0);
+	printf("\t Beta:                            %2.4lf\n",  beta);
  	printf("\t Lattice size:                    %i x %i x %i\n", Lx, Ly, Lt);
  	printf("\t Thermalization steps:            %i\n",      g_thermalize);
  	printf("\t Number of measurements:          %i\n",      g_measurements);
