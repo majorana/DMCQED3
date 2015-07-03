@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <math.h>
 #ifndef M_PI
 #define M_PI    3.14159265358979323846f
@@ -158,7 +159,7 @@ void print_fermion_mat() {
 	complex double basis[GRIDPOINTS];
 	complex double out[GRIDPOINTS];
 	complex double temp[GRIDPOINTS];
-	FILE *fp;
+	//FILE *fp;
 	
 	//fp = fopen("fmat_real.dat", "w");
 	
@@ -167,7 +168,7 @@ void print_fermion_mat() {
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
 		basis[i] = 1.0;
-		fermion_fp(out, temp, basis);
+		fermion(out, basis);
 		//printf("{");
 		for(j = 0; j < GRIDPOINTS-1; j++)
 		{
@@ -176,7 +177,7 @@ void print_fermion_mat() {
 			printf("%f  ", creal(x));
 
 		}
-		fprintf(fp, "%f\n", creal(out[GRIDPOINTS-1]));
+		//fprintf(fp, "%f\n", creal(out[GRIDPOINTS-1]));
 		printf("%f\n", creal(out[GRIDPOINTS-1]));
 		//printf("},");
 		basis[i] = 0.0;
@@ -188,7 +189,7 @@ void print_fermion_mat() {
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
 		basis[i] = 1.0;
-		fermion_fp(out, temp, basis);
+		fermion(out, basis);
 		//printf("{");
 		for(j = 0; j < GRIDPOINTS-1; j++)
 		{
@@ -215,6 +216,7 @@ void get_det_mat()
 	{
 		basis[i] = 1.0;
 		fermion(fdet[i], basis);
+		basis[i] = 0.0;
 	}
 	print_fermion_mat();
 }

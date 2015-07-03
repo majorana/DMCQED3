@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "lapack/lapacke.h"
 #include "complex/complex.h"
 #include "lattice.h"
 #include "linalg.h"
@@ -8,8 +9,7 @@
 void add(complex double *Q, complex double *R, complex double *S)
 {
   	int ix;
-  	for (ix=0;ix<GRIDPOINTS;ix++)
-  	{
+  	for (ix=0;ix<GRIDPOINTS;ix++) {
     	Q[ix] = R[ix] + S[ix];
   	}
 }
@@ -20,12 +20,9 @@ double square_norm(complex double *S)
   	static double ds;
 
   	ds=0.0;
-
-  	for (ix=0;ix<GRIDPOINTS;ix++)
-  	{
+  	for (ix=0;ix<GRIDPOINTS;ix++) {
     	ds += creal(cconj(S[ix])*S[ix]);
   	}
-
   	return ds;
 }
 
@@ -61,8 +58,7 @@ void assign_add_mul_r(complex double *P, complex double *Q, double c)
 
 void assign_diff_mul(complex double *R, complex double *S, complex double c){
   	int ix;
-  	for (ix=0;ix<GRIDPOINTS;ix++)
-  	{
+  	for (ix=0;ix<GRIDPOINTS;ix++) {
     	R[ix]=R[ix]-c*S[ix];
   	}
 }
@@ -241,3 +237,61 @@ void set_zero(complex double *P)
  	};
 }
 
+/* *************************************************************
+ * LAPACKE routines wrapper: matrix inverse and determinant
+ * *************************************************************
+ */
+
+// Need dereference if a 2D array, e.g. a[][] is passed, i.e. matrix_inverse_r(*a)
+int matrix_inverse_r(double *mat)
+{
+   	lapack_int n, lda, info1, info2;
+   	lapack_int ipiv[GRIDPOINTS];
+
+   	n = GRIDPOINTS;
+   	lda = GRIDPOINTS;
+
+   	info1 = LAPACKE_dgetrf(LAPACK_ROW_MAJOR, n, n, mat, lda, ipiv);
+	info2 = LAPACKE_dgetri(LAPACK_ROW_MAJOR, n, mat, lda, ipiv);
+	
+	if (info1 || info2) 
+		return 1; // singular?
+	else
+		return 0; // correct
+}
+
+int matrix_inverse(complex double *mat)
+{
+   	lapack_int n, lda, info1, info2;
+   	lapack_int ipiv[GRIDPOINTS];
+
+   	n = GRIDPOINTS;
+   	lda = GRIDPOINTS;
+
+   	info1 = LAPACKE_zgetrf(LAPACK_ROW_MAJOR, n, n, mat, lda, ipiv);
+	info2 = LAPACKE_zgetri(LAPACK_ROW_MAJOR, n, mat, lda, ipiv);
+	
+	if (info1 || info2) 
+		return 1;
+	else
+		return 0;
+}
+
+double matrix_det_r(double *mat)
+// overall sign is not calculated
+{
+	int i, j;
+	double det = 1.0;
+	lapack_int n, lda, info;
+   	lapack_int ipiv[GRIDPOINTS];
+
+   	n = GRIDPOINTS;
+   	lda = GRIDPOINTS;
+
+   	info = LAPACKE_dgetrf(LAPACK_ROW_MAJOR, n, n, mat, lda, ipiv);
+
+	for(i = 0; i<n; i++) {
+		det *= mat[i*GRIDPOINTS + i];
+	}
+	return det;
+}

@@ -7,6 +7,8 @@
 #include "mc.h"
 #include "fields.h"
 
+#include "linalg.h"
+
 /* global variables */
 double g_mu = 1.0;
 double g_t = 1.0;
@@ -24,9 +26,10 @@ void echo_sim_params();
 
 int main(int argc, char **argv) 
 {
-	int i, l;
+	int i, j, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
+
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
   	/* Initialize the lattice geometry */

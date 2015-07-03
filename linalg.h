@@ -37,4 +37,9 @@ double max_r(double *v);
 //Conjugate gradient method...
 int cg(complex double *P, complex double *Q, int max_iter, double eps_sq, matrix_mult f);
 
+//LAPACK wrapper
+int matrix_inverse(complex double *mat);
+int matrix_inverse_r(double *mat);
+double matrix_det_r(double *mat);
+
 #endif
