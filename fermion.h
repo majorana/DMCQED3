@@ -10,9 +10,7 @@
 
 extern void fermion(complex double *out, complex double *in);
 
-complex double det_ratio_At(const int i);
-
-complex double det_ratio_Axy(const int i); 
+complex double det_ratio(const int i); 
 
 void update_inverse_At(const int i); 
 

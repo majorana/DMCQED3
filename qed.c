@@ -37,14 +37,16 @@ int main(int argc, char **argv)
   	/* Initialize the lattice geometry */
   	init_lattice(Lx, Ly, Lt);
   	/* Initialize the fields */
-  	coldstart();
+  	hotstart();
   	/* Print out the run parameters */
   	echo_sim_params();
 	
 	det1 = get_fermion_mat();
-	At[12] = 2.5;
+	At[10] = 0.8;
+	Ax[10] = 2.5;
+	Ay[10] = 1.5;
 	calculatelinkvars();
-	detr = det_ratio_At(12);
+	detr = det_ratio(10);
 	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
 	det2 = get_fermion_mat();
 	printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));

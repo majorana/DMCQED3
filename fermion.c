@@ -24,35 +24,57 @@ complex double (*Minv)[GRIDPOINTS];
 // pointer to the spare 2D array
 complex double (*Minv_spare)[GRIDPOINTS];
 
-complex double det_ratio_At(const int i) {
-// the i-th row
-	complex double rdet;
-	int j;
-	//fdet[i][tp[i]] = exp(-g_mu)*Ut[i];
-
-	rdet = 0.0;
-	for(j=0;j<GRIDPOINTS;j++) {
-		//printf("%.5f, %.5f\n", Minv[j][i]);
-		//rdet = rdet + fdet[i][j]*Minv[j][i];
-	}
-	rdet = exp(-g_mu)*Ut[i]*Minv[tp[i]][i] - Minv[i][i] - g_t*(Ux[i]*Minv[xp[i]][i] + Uy[i]*Minv[yp[i]][i] + cconj(Ux[xm[i]])*Minv[xm[i]][i] + cconj(Uy[ym[i]])*Minv[ym[i]][i]);
-	return rdet;
+complex double prod_row_col(int i, int j) 
+{
+	return exp(-g_mu)*Ut[i]*Minv[tp[i]][j] - Minv[i][j] - g_t*(Ux[i]*Minv[xp[i]][j] + Uy[i]*Minv[yp[i]][j] + cconj(Ux[xm[i]])*Minv[xm[i]][j] + cconj(Uy[ym[i]])*Minv[ym[i]][j]);
 }
 
-complex double det_ratio_Axy(const int i) {
-	int j, k;
-	complex double rdet1, rdet2, x;
-	complex double col[GRIDPOINTS];
+complex double prod_col_row(int i, int j) 
+{
+	return exp(-g_mu)*Ut[tm[i]]*Minv[j][tm[i]] - Minv[j][i] - g_t*(Ux[xm[i]]*Minv[j][xm[i]] + Uy[ym[i]]*Minv[j][ym[i]] + cconj(Ux[i])*Minv[j][xp[i]] + cconj(Uy[i])*Minv[j][yp[i]]);
+}
+
+complex double prod_row_vec(int i, complex double *v)
+{
+	return exp(-g_mu)*Ut[i]*v[tp[i]] - v[i] - g_t*(Ux[i]*v[xp[i]] + Uy[i]*v[yp[i]] + cconj(Ux[xm[i]])*v[xm[i]] + cconj(Uy[ym[i]])*v[ym[i]]);
+}
+
+complex double det_ratio(const int i) {
+	int j, l, k;
+	complex double rdet1, rdet2, rdet3, r, x, y;
+	complex double colx[GRIDPOINTS], coly[GRIDPOINTS];
+	//rdet1 = exp(-g_mu)*Ut[i]*Minv[tp[i]][i] - Minv[i][i] - g_t*(Ux[i]*Minv[xp[i]][i] + Uy[i]*Minv[yp[i]][i] + cconj(Ux[xm[i]])*Minv[xm[i]][i] + cconj(Uy[ym[i]])*Minv[ym[i]][i]);
+	
+	// det M'/det M 
+	rdet1 = prod_row_col(i, i);
+	//x = exp(-g_mu)*Ut[i]*Minv[tp[i]][j] - Minv[i][j] - g_t*(Ux[i]*Minv[xp[i]][j] + Uy[i]*Minv[yp[i]][j] + cconj(Ux[xm[i]])*Minv[xm[i]][j] + cconj(Uy[ym[i]])*Minv[ym[i]][j]);
+
+	// calculate the xp[i] and yp[i] rows of the inv of M'
 	j = xp[i];
-	rdet1 = exp(-g_mu)*Ut[i]*Minv[tp[i]][i] - Minv[i][i] - g_t*(Ux[i]*Minv[xp[i]][i] + Uy[i]*Minv[yp[i]][i] + cconj(Ux[xm[i]])*Minv[xm[i]][i] + cconj(Uy[ym[i]])*Minv[ym[i]][i]);
-	x = exp(-g_mu)*Ut[i]*Minv[tp[i]][j] - Minv[i][j] - g_t*(Ux[i]*Minv[xp[i]][j] + Uy[i]*Minv[yp[i]][j] + cconj(Ux[xm[i]])*Minv[xm[i]][j] + cconj(Uy[ym[i]])*Minv[ym[i]][j]);
-	// need to find the j-th column of the updated inverse
+	x = prod_row_col(i, j);
+	// need to find the j-th column of the inverse of M' 
 	for(k = 0; k < GRIDPOINTS; k++) 
-	{
-		col[k] = Minv[k][j] - x/rdet1*Minv[k][i];
-	}
-	rdet2 = exp(-g_mu)*Ut[j]*col[tp[i]] - g_t*(Ux[i]*col[xp[i]] + Uy[i]*col[yp[i]] + cconj(Ux[xm[i]])*col[xm[i]] + cconj(Uy[ym[i]])*col[ym[i]]);
-	return rdet1*rdet2;
+		colx[k] = Minv[k][j] - x/rdet1*Minv[k][i];
+	
+
+	l = yp[i];
+	y = prod_row_col(i, l);
+	for(k = 0; k < GRIDPOINTS; k++) 
+		coly[k] = Minv[k][l] - y/rdet1*Minv[k][i];
+
+	
+	// calculate det M''/ det M'
+	//rdet2 = exp(-g_mu)*Ut[j]*col[tp[j]] - col[j] - g_t*(Ux[j]*col[xp[j]] + Uy[j]*col[yp[j]] + cconj(Ux[xm[j]])*col[xm[j]] + cconj(Uy[ym[j]])*col[ym[j]]);
+	rdet2 = prod_row_vec(j, colx);
+	
+	y = prod_row_vec(xp[i], coly);
+	for(k = 0; k < GRIDPOINTS; k++) 
+		coly[k] = coly[k] - y/rdet2*colx[k];
+
+	// calculate det M'''/det M''
+	rdet3 = prod_row_vec(l, coly);
+	r = rdet1*rdet2*rdet3;
+	return rdet1*rdet2*rdet3;
 }
 
 void update_row(const int i) {
@@ -228,10 +250,10 @@ complex double get_fermion_mat()
 		set_zero(fdet[i]);
 		fdet[i][tp[i]] = exp(-g_mu)*Ut[i];
 		fdet[i][i] = -1.0;
-		fdet[i][xp[i]] = -g_t;
-		fdet[i][xm[i]] = -g_t;
-		fdet[i][yp[i]] = -g_t;
-		fdet[i][ym[i]] = -g_t;
+		fdet[i][xp[i]] = -g_t*Ux[i];
+		fdet[i][xm[i]] = -g_t*cconj(Ux[xm[i]]);
+		fdet[i][yp[i]] = -g_t*Uy[i];
+		fdet[i][ym[i]] = -g_t*cconj(Uy[ym[i]]);
 	}
 
 	for(i = 0; i<GRIDPOINTS;i++) {

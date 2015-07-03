@@ -19,59 +19,32 @@ void update() //Basic HMC update step
  	int i, acc;
 	double saveAt, saveAx, saveAy, prob, S0, S1;
 	complex double saveUt, saveUx, saveUy, d;
-  	double r[1];
+  	double r[1], rA[3];
 
 	acc = 0;
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
-		saveAt = At[i];
-		saveUt = Ut[i];
 		// propose a change
-		S0 = localSt(i);
-
-		ranlxd(r,1);
-		At[i] = 2*M_PI*r[0];
-		Ut[i] = cos(At[i]) + I*sin(At[i]);
-		S1 = localSt(i);
-
-		d = 1.0; //det_ratio_At(i);
-		prob = cconj(d)*d*exp(S0-S1);
- 	 	if(prob >= 1) {
-    		R += 1;
-			//update_inverse_At(i);
-  		}
-  		else {
-    		ranlxd(r,1);
-    		if(r[0] < prob) {
-      			R += 1;
-				//update_inverse_At(i);
-    		}
-    		else {
-      		// reject the change, get the old values for A
-			    At[i] = saveAt;
-				Ut[i] = saveUt;
-			}
-		}
-
-		// propose a change
-		saveAx = Ax[i];
-		saveUx = Ux[i];
-		saveAy = Ay[i];
-		saveUy = Uy[i];
+		saveAt = At[i]; saveUt = Ut[i];
+		saveAx = Ax[i]; saveUx = Ux[i];
+		saveAy = Ay[i]; saveUy = Uy[i];
 
 		S0 = localSxy(i);
 
-		ranlxd(r,1);
-		Ax[i] = 2*M_PI*r[0];
+		ranlxd(rA,3);
+
+		At[i] = 2*M_PI*rA[0];
+		Ut[i] = cos(At[i]) + I*sin(At[i]);
+
+		Ax[i] = 2*M_PI*rA[1];
 		Ux[i] = cos(Ax[i]) + I*sin(Ax[i]);
 
-		ranlxd(r,1);
-		Ay[i] = 2*M_PI*r[0];
+		Ay[i] = 2*M_PI*rA[2];
 		Uy[i] = cos(Ay[i]) + I*sin(Ay[i]);
 		
 		S1 = localSxy(i);
 
-		d = 1.0; //det_ratio_Axy(i);
+		d = 1.0; //det_ratio(i);
 		prob = cconj(d)*d*exp(S0-S1);
  	 	if(prob >= 1) {
     		R += 1;
@@ -85,10 +58,9 @@ void update() //Basic HMC update step
     		}
     		else {
       		// reject the change, get the old values for A
-			    Ax[i] = saveAx;
-				Ux[i] = saveUx;
-				Ay[i] = saveAy;
-				Uy[i] = saveUy;
+				At[i] = saveAt; Ut[i] = saveUt;
+			    Ax[i] = saveAx; Ux[i] = saveUx;
+				Ay[i] = saveAy; Uy[i] = saveUy;
 			}
 		}
 	}
