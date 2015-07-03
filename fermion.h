@@ -8,13 +8,13 @@
 
 #include "linalg.h"
 
+complex double (*Minv)[GRIDPOINTS];
+complex double (*Minv_spare)[GRIDPOINTS];
+
+
 extern void fermion(complex double *out, complex double *in);
 
 complex double det_ratio(const int i); 
-
-void update_inverse_At(const int i); 
-
-void update_inverse_Axy(const int i); 
 
 complex double get_fermion_mat();
 

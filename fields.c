@@ -70,8 +70,6 @@ void hotstart()
   		At[i]=2*M_PI*r[i]-M_PI;
   		Ax[i]=2*M_PI*r[i+GRIDPOINTS]-M_PI;
 		Ay[i]=2*M_PI*r[i+2*GRIDPOINTS]-M_PI;
-		//Ax[i] = 0.0;
-		//Ay[i] = 0.0;
  	}
  	calculatelinkvars();
 }

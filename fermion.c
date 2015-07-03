@@ -24,6 +24,36 @@ complex double (*Minv)[GRIDPOINTS];
 // pointer to the spare 2D array
 complex double (*Minv_spare)[GRIDPOINTS];
 
+double matrix_diff(complex double (*A1)[GRIDPOINTS],  complex double (*A2)[GRIDPOINTS]) 
+{
+	int i, j;
+	double nm;
+	nm = 0.0;
+	for(i=0; i<GRIDPOINTS; i++) 
+		for(j=0; j<GRIDPOINTS; j++)
+			nm += cabs(A1[i][j] - A2[i][j])*cabs(A1[i][j] - A2[i][j]);
+	return sqrt(nm);
+}
+
+void matrix_print(complex double (*A)[GRIDPOINTS]) 
+{
+	int i, j;
+	for(i = 0; i<GRIDPOINTS;i++) {
+		for(j = 0; j<GRIDPOINTS; j++) {
+			printf("%.2f ", creal(A[i][j]));
+		}
+		printf("\n");
+	}
+	printf("---------------------------------------------\n");
+	for(i = 0; i<GRIDPOINTS;i++) {
+		for(j = 0; j<GRIDPOINTS; j++) {
+			printf("%.2f ", cimag(A[i][j]));
+		}
+		printf("\n");
+	}
+	return;
+}
+
 complex double prod_row_col(int i, int j) 
 {
 	return exp(-g_mu)*Ut[i]*Minv[tp[i]][j] - Minv[i][j] - g_t*(Ux[i]*Minv[xp[i]][j] + Uy[i]*Minv[yp[i]][j] + cconj(Ux[xm[i]])*Minv[xm[i]][j] + cconj(Uy[ym[i]])*Minv[ym[i]][j]);
@@ -77,14 +107,13 @@ complex double det_ratio(const int i) {
 	return rdet1*rdet2*rdet3;
 }
 
-void update_row(const int i) {
+void update_row(const int i, complex double rdet) {
 	int j, k;
-	complex double x, T;
+	complex double x;
 	complex double (*temp)[GRIDPOINTS];
-
-	// B_i A^i
-	T = exp(-g_mu)*Ut[i]*Minv[tp[i]][i] - Minv[i][i] - g_t*(Ux[i]*Minv[xp[i]][i] + Uy[i]*Minv[yp[i]][i] + cconj(Ux[xm[i]])*Minv[xm[i]][i] + cconj(Uy[ym[i]])*Minv[ym[i]][i]);
-
+	
+	// just for test
+	Minv_spare = Minv2;
 
 	for(j = 0; j < GRIDPOINTS; j++) 
 	{
@@ -93,25 +122,26 @@ void update_row(const int i) {
 			for(k = 0; k < GRIDPOINTS; k++)
 			{
 				// (new A)^i = A^i/T
-				Minv_spare[k][j] = 1.0/T*Minv[k][i];
+				Minv_spare[k][i] = 1.0/rdet*Minv[k][i];
 			}
 		}
 		else
 		{
 			// x = B_i A^j
-			x = exp(-g_mu)*Ut[i]*Minv[tp[i]][j] - Minv[i][j] - g_t*(Ux[i]*Minv[xp[i]][j] + Uy[i]*Minv[yp[i]][j] + cconj(Ux[xm[i]])*Minv[xm[i]][j] + cconj(Uy[ym[i]])*Minv[ym[i]][j]);
+			//x = exp(-g_mu)*Ut[i]*Minv[tp[i]][j] - Minv[i][j] - g_t*(Ux[i]*Minv[xp[i]][j] + Uy[i]*Minv[yp[i]][j] + cconj(Ux[xm[i]])*Minv[xm[i]][j] + cconj(Uy[ym[i]])*Minv[ym[i]][j]);
+			x = prod_row_col(i, j);
 			for(k = 0; k < GRIDPOINTS; k++)
 			{
 				// (new A)^j = A^j - (B_i A^j)/T A^i
-				Minv_spare[k][j] = Minv[k][j] - x/T*Minv[k][i];
+				Minv_spare[k][j] = Minv[k][j] - x/rdet*Minv[k][i];
 			}
 		}
 	}
 
 	// need to exchange Minv and Minv_spare
-	temp = Minv;
-	Minv = Minv_spare;
-	Minv_spare = temp;
+	//temp = Minv;
+	//Minv = Minv_spare;
+	//Minv_spare = temp;
 }
 
 void update_col(const int i) {
@@ -146,21 +176,12 @@ void update_col(const int i) {
 	}
 
 	// need to exchange Minv and Minv_spare
-	temp = Minv;
-	Minv = Minv_spare;
-	Minv_spare = temp;
+	//temp = Minv;
+	//Minv = Minv_spare;
+	//Minv_spare = temp;
 }
 
-void update_inverse_At(const int i) {
-	update_row(i);
-	return;
-}
 
-void update_inverse_Axy(const int i) {
-	update_row(i);
-	update_col(i);
-	return;
-}
 
 void fermion(complex double *out, complex double *in) 
 {
@@ -260,29 +281,16 @@ complex double get_fermion_mat()
 		//printf("{");
 		for(j = 0; j<GRIDPOINTS; j++) {
 			Minv1[i][j] =  fdet[i][j];
-			//printf("%.3f,  ", creal(fdet[i][j]));
 		}
-		//printf("%.3f", creal(fdet[i][j]));
-		//printf("},\n");
 	}
-	printf("------------------\n");
-	for(i = 0; i<GRIDPOINTS;i++) {
-		//printf("{");
-		for(j = 0; j<GRIDPOINTS-1; j++) {
-			//printf("%.3f,  ", cimag(fdet[i][j]));
-		}
-		//printf("%.3f", cimag(fdet[i][j]));
-		//printf("},\n");
-	}
+	
 	r = matrix_det(*fdet);
+
 	printf("Det: %.12f, %.12f\n", creal(r), cimag(r));
+
 	matrix_inverse(*Minv1);
-	for(i = 0; i<GRIDPOINTS;i++) {
-		for(j = 0; j<GRIDPOINTS; j++) {
-			//printf("%.3f  ", creal(Minv1[i][j]));
-		}
-		//printf("\n");
-	}
+	//matrix_print(Minv1);
+	
 	Minv = Minv1;
 	return r;
 }

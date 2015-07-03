@@ -2,6 +2,7 @@
 #define _LINALG_H
 
 #include "complex/complex.h"
+#include "lattice.h"
 
 //If this is #defined, CG will print the norm of each residue
 #undef MONITOR_CG_PROGRESS
@@ -42,5 +43,7 @@ int matrix_inverse(complex double *mat);
 int matrix_inverse_r(double *mat);
 double matrix_det_r(double *mat);
 complex double matrix_det(complex double *mat);
+
+double matrix_diff(complex double (*A1)[GRIDPOINTS],  complex double (*A2)[GRIDPOINTS]);
 
 #endif
