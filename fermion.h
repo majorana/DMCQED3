@@ -8,14 +8,19 @@
 
 #include "linalg.h"
 
-complex double (*Minv)[GRIDPOINTS];
-complex double (*Minv_spare)[GRIDPOINTS];
 
+typedef complex double (*fmat)[GRIDPOINTS];
 
 extern void fermion(complex double *out, complex double *in);
 
-complex double det_ratio(const int i); 
+extern complex double det_ratio(const int i, fmat A); 
+void update_row(const int i, fmat out, fmat in);
 
-complex double get_fermion_mat();
+extern complex double get_fermion_mat(fmat M);
+
+extern complex double Minv1[GRIDPOINTS][GRIDPOINTS];
+extern complex double Minv2[GRIDPOINTS][GRIDPOINTS];
+extern complex double Minv3[GRIDPOINTS][GRIDPOINTS];
+
 
 #endif

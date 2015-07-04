@@ -41,20 +41,21 @@ int main(int argc, char **argv)
   	/* Print out the run parameters */
   	echo_sim_params();
 	
-	det1 = get_fermion_mat();
-	i = 20;
+	det1 = get_fermion_mat(Minv1);
+	i = 30;
 	// inverse is stored in Minv
 	At[i] = 3.8;
-	//Ax[i] = 2.5;
-	//Ay[i] = 1.5;
+	Ax[i] = 2.5;
+	Ay[i] = 1.5;
 	calculatelinkvars();
-	detr = det_ratio(i);
-	update_row(i, detr);
+	detr = det_ratio(i, Minv1);
+	update_row(i, Minv2, Minv1);
+	update_col(i, Minv3, Minv2);
 	// result in Minv_spare
 	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
-	det2 = get_fermion_mat();
+	det2 = get_fermion_mat(Minv1);
 	printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
-	printf("%.12f\n", matrix_diff(Minv, Minv_spare));
+	printf("%.12f\n", matrix_diff(Minv1, Minv3));
 	return 0;
 
   	/* thermalization */
