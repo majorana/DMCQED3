@@ -14,7 +14,7 @@
 double g_mu = 1.0;
 double g_t = 1.0;
 
-int g_thermalize   = 200;   //Number of MC updates for thermalization
+int g_thermalize   = 2;   //Number of MC updates for thermalization
 int g_measurements = 400;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  2;    //Number of MC updates between the measurements
 
@@ -55,17 +55,19 @@ int main(int argc, char **argv)
 	hard_inverse(Minv2);
 	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
 	printf("%.12f\n", matrix_diff(Minv1, Minv2));
-	return 0;
 
+
+	mc_init();
   	/* thermalization */
   	mc_iter = 0; //Counts the total number of calls to the update() routine
   	printf("\n Thermalization: \n\n");
   	for(i=0; i<g_thermalize; i++)
   	{
-   		update();
-		//printf("\t Step %04i,\t mp = %2.4lf,\t pl = %2.4lf,\t cc = %2.4lf\n", i, mean_plaquette(), polyakov_loop());
+   		mc_update();
+		printf("\t Step %04i\n", i);
   	};
-  	
+	return 0;
+
 	/* measure the iterations only during real simulation, not thermalization */
   	R              = 0; //Counts the total number of accepted configurations
   	mc_iter       = 0; //Counts the total number of calls to the update() routine

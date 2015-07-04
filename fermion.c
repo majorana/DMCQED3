@@ -188,7 +188,7 @@ void update_inverse(int i, fmat M, fmat temp)
 	if (up_counter < g_inverse) 
 	{
 		up_counter++;
-		quick_update_inverse(i, temp, M);
+		quick_update_inverse(i, M, temp);
 	}
 	else 
 	{

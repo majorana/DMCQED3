@@ -26,5 +26,6 @@ extern complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 extern complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 extern complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
+void matrix_print(fmat A);
 
 #endif
