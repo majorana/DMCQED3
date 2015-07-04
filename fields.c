@@ -37,10 +37,6 @@ double S_G(int i)
 	return S_Gtx(i) + S_Gty(i) + S_Gxy(i);
 }
 
-double localSt(int i)
-{
-	return S_Gtx(i) + S_Gtx(xm[i]) + S_Gty(i) + S_Gty(ym[i]);
-}
 
 double localSxy(int i)
 {
@@ -55,7 +51,6 @@ void coldstart()
   		At[i]     = 0.0;
   		Ax[i]     = 0.0;
 		Ay[i]     = 0.0;
-
  	};
  	calculatelinkvars();
 }

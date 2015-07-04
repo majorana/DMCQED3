@@ -8,7 +8,6 @@
 
 #include "linalg.h"
 
-
 typedef complex double (*fmat)[GRIDPOINTS];
 
 extern void fermion(complex double *out, complex double *in);
@@ -21,6 +20,5 @@ extern complex double get_fermion_mat(fmat M);
 extern complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 extern complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 extern complex double Minv3[GRIDPOINTS][GRIDPOINTS];
-
 
 #endif

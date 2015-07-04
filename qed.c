@@ -42,7 +42,7 @@ int main(int argc, char **argv)
   	echo_sim_params();
 	
 	det1 = get_fermion_mat(Minv1);
-	i = 30;
+	i = 26;
 	// inverse is stored in Minv
 	At[i] = 3.8;
 	Ax[i] = 2.5;

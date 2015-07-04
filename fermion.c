@@ -16,7 +16,7 @@ complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
-double matrix_diff(complex double (*A1)[GRIDPOINTS],  complex double (*A2)[GRIDPOINTS]) 
+double matrix_diff(fmat A1, fmat A2) 
 {
 	int i, j;
 	double nm;
@@ -27,7 +27,7 @@ double matrix_diff(complex double (*A1)[GRIDPOINTS],  complex double (*A2)[GRIDP
 	return sqrt(nm);
 }
 
-void matrix_print(complex double (*A)[GRIDPOINTS]) 
+void matrix_print(fmat A) 
 {
 	int i, j;
 	for(i = 0; i<GRIDPOINTS;i++) {
@@ -63,13 +63,11 @@ complex double prod_row_vec(int i, complex double *v)
 
 complex double det_ratio(const int i, fmat A) {
 	int j, l, k;
-	complex double rdet1, rdet2, rdet3, r, x, y;
+	complex double rdet1, rdet2, rdet3, x, y;
 	complex double colx[GRIDPOINTS], coly[GRIDPOINTS];
-	//rdet1 = exp(-g_mu)*Ut[i]*Minv[tp[i]][i] - Minv[i][i] - g_t*(Ux[i]*Minv[xp[i]][i] + Uy[i]*Minv[yp[i]][i] + cconj(Ux[xm[i]])*Minv[xm[i]][i] + cconj(Uy[ym[i]])*Minv[ym[i]][i]);
 	
 	// det M'/det M 
 	rdet1 = prod_row_col(i, i, A);
-	//x = exp(-g_mu)*Ut[i]*Minv[tp[i]][j] - Minv[i][j] - g_t*(Ux[i]*Minv[xp[i]][j] + Uy[i]*Minv[yp[i]][j] + cconj(Ux[xm[i]])*Minv[xm[i]][j] + cconj(Uy[ym[i]])*Minv[ym[i]][j]);
 	// calculate the xp[i] and yp[i] rows of the inv of M'
 	j = xp[i];
 	x = prod_row_col(i, j, A);
@@ -85,7 +83,6 @@ complex double det_ratio(const int i, fmat A) {
 
 	
 	// calculate det M''/ det M'
-	//rdet2 = exp(-g_mu)*Ut[j]*col[tp[j]] - col[j] - g_t*(Ux[j]*col[xp[j]] + Uy[j]*col[yp[j]] + cconj(Ux[xm[j]])*col[xm[j]] + cconj(Uy[ym[j]])*col[ym[j]]);
 	rdet2 = prod_row_vec(j, colx);
 	
 	y = prod_row_vec(xp[i], coly);
@@ -94,7 +91,7 @@ complex double det_ratio(const int i, fmat A) {
 
 	// calculate det M'''/det M''
 	rdet3 = prod_row_vec(l, coly);
-	r = rdet1*rdet2*rdet3;
+
 	return rdet1*rdet2*rdet3;
 }
 
@@ -141,17 +138,12 @@ void update_col(const int i, fmat out, fmat in) {
 		{
 			// x = B^i A_j
 			x = prod_col_row(i, j, in);
-				//exp(-g_mu)*Ut[tm[i]]*Minv[j][tm[i]] - Minv[j][i] - g_t*(Ux[xm[i]]*Minv[j][xm[i]] + Uy[ym[i]]*Minv[j][ym[i]] + cconj(Ux[i])*Minv[j][xp[i]] + cconj(Uy[i])*Minv[j][yp[i]]);
 			for(k = 0; k < GRIDPOINTS; k++)
-			{
 				// (new A)_j = A_j - (B^i A_j)/T A_i
 				out[j][k] = in[j][k] - x/T*in[i][k];
-			}
 		}
 	}
 }
-
-
 
 void fermion(complex double *out, complex double *in) 
 {
@@ -164,64 +156,10 @@ void fermion(complex double *out, complex double *in)
 }
 
 
-
 /* ****************************************************************************************
  * Test routines 
  * ****************************************************************************************
  */
-void print_fermion_mat() {
-	int i, j;
-	complex double x;
-	complex double basis[GRIDPOINTS];
-	complex double out[GRIDPOINTS];
-	//FILE *fp;
-	
-	//fp = fopen("fmat_real.dat", "w");
-	
-	printf("\n Output fermion determinant...\n Real part:\n");
-	set_zero(basis);
-	for(i = 0; i<GRIDPOINTS; i++) 
-	{
-		basis[i] = 1.0;
-		fermion(out, basis);
-		//printf("{");
-		for(j = 0; j < GRIDPOINTS-1; j++)
-		{
-			x = out[j];
-			//fprintf(fp, "%f  ", creal(x));
-			printf("%.3f  ", creal(x));
-
-		}
-		//fprintf(fp, "%f\n", creal(out[GRIDPOINTS-1]));
-		printf("%f\n", creal(out[GRIDPOINTS-1]));
-		//printf("},");
-		basis[i] = 0.0;
-	}
-	//fclose(fp);
-
-	//fp = fopen("fmat_imag.dat", "w");
-	
-	printf("Imaginary part:\n");
-	for(i = 0; i<GRIDPOINTS; i++) 
-	{
-		basis[i] = 1.0;
-		fermion(out, basis);
-		//printf("{");
-		for(j = 0; j < GRIDPOINTS-1; j++)
-		{
-			x = out[j];
-			//fprintf(fp, "%f  ", cimag(x));
-			printf("%.3f  ", cimag(x));
-		}
-		//fprintf(fp, "%f\n", cimag(out[GRIDPOINTS-1]));
-		printf("%f\n", cimag(out[GRIDPOINTS-1]));
-
-		//printf("},");
-		basis[i] = 0.0;
-	}
-	//fclose(fp);
-}
-
 
 complex double get_fermion_mat(fmat M)
 {

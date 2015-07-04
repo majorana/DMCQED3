@@ -31,7 +31,7 @@ void assign(complex double *R, complex double *S)
   	int ix;
   	for (ix=0;ix<GRIDPOINTS;ix++){
     	R[ix] = S[ix];
-  }
+  	}
 }
 
 void assign_add_mul(complex double *P, complex double *Q, complex double c)
@@ -40,7 +40,7 @@ void assign_add_mul(complex double *P, complex double *Q, complex double c)
   	for (ix=0;ix<GRIDPOINTS;ix++){
 		P[ix] = P[ix] + c*Q[ix];
   	  	//(*r).s1 = (*r).s1 + c*(*s).s1;
-  }
+  	}
 }
 
 // P = P + c Q, c is real
@@ -65,76 +65,76 @@ void assign_diff_mul(complex double *R, complex double *S, complex double c){
 
 void assign_mul_add_r(complex double *R, complex double *S, double c)
 {
-  int ix;
-  static double fact;
+  	int ix;
+  	static double fact;
   
-  fact=c;
+  	fact=c;
   
-  for (ix=0;ix<GRIDPOINTS;ix++){
-    R[ix] = c*R[ix] + S[ix];
+  	for (ix=0;ix<GRIDPOINTS;ix++){
+    	R[ix] = c*R[ix] + S[ix];
     //(*r).s2=fact*(*r).s2+(*s).s2;
-  }
+  	}
 }
 
 void diff(complex double *Q, complex double *R, complex double *S)
 {
-  int ix;
-  for (ix=0;ix<GRIDPOINTS;ix++){
-	Q[ix] = R[ix]-S[ix];
+  	int ix;
+  	for (ix=0;ix<GRIDPOINTS;ix++){
+		Q[ix] = R[ix]-S[ix];
     //(*q).s2=(*r).s2-(*s).s2;
-  }
+  	}
 }
 
 void mul_r(complex double *R, double c, complex double *S)
 {
-  int ix;
+  	int ix;
 
-  for (ix=0;ix<GRIDPOINTS;ix++){
-    R[ix]=c*S[ix]; 
+  	for (ix=0;ix<GRIDPOINTS;ix++){
+    	R[ix]=c*S[ix]; 
     //(*r).s2=c*(*s).s2;
-  }
+  	}
 }
 
 void mul_c(complex double *R, complex double c, complex double *S)
 {
-  int ix;
-  for (ix=0;ix<GRIDPOINTS;ix++){
-    R[ix]=c*S[ix]; 
+  	int ix;
+  	for (ix=0;ix<GRIDPOINTS;ix++){
+    	R[ix]=c*S[ix]; 
     //(*r).s2=c*(*s).s2;
-  }
+  	}
 }
 
 complex double scalar_prod(complex double *S, complex double *R)
 {
-  int ix;
-  static complex double ds;
+  	int ix;
+  	static complex double ds;
   
-  /* Real Part */
+  	/* Real Part */
 
-  ds=0.0 + I*0.0;
+  	ds=0.0 + I*0.0;
   
-  for (ix=0;ix<GRIDPOINTS;ix++){
-    ds+=cconj(S[ix])*R[ix]; //+cconj((*s).s2)*(*r).s2;
-  }
+  	for (ix=0;ix<GRIDPOINTS;ix++){
+    	ds+=cconj(S[ix])*R[ix]; //+cconj((*s).s2)*(*r).s2;
+  	}
 
-  return(ds);
+  	return(ds);
 }
 
 double scalar_prod_r(complex double *S, complex double *R)
 {
-  int ix;
-  static double ds;
+  	int ix;
+  	static double ds;
   
-  /* Real Part */
+  	/* Real Part */
 
-  ds=0.0;
+  	ds=0.0;
   
-  for (ix=0;ix<GRIDPOINTS;ix++){
+  	for (ix=0;ix<GRIDPOINTS;ix++){
     //ds+=conj((*s).s1)*(*r).s1+conj((*s).s2)*(*r).s2;
-    ds += creal(cconj(S[ix])*R[ix]);
-  }
+    	ds += creal(cconj(S[ix])*R[ix]);
+  	}
 
-  return(ds);
+  	return(ds);
 }
 
 void print_vector(complex double *v)
@@ -167,6 +167,7 @@ double max_r(double *v)
 	}
 	return(m);
 }
+
 /************ Conjugate gradient ****************/
 /***    Solves the equation f*P = Q           ***/
 /************************************************/
