@@ -13,11 +13,19 @@
 int R;
 int mc_iter;
 
-void update() //Basic MC update step
+complex double Minv[GRIDPOINTS][GRIDPOINTS];
+complex double temp[GRIDPOINTS][GRIDPOINTS];
+
+void mc_init()
+{
+	hard_inverse(Minv);
+}
+
+void mc_update() //Basic MC update step
 {
  	int i, acc;
 	double saveAt, saveAx, saveAy, prob, S0, S1;
-	complex double saveUt, saveUx, saveUy, d;
+	complex double saveUt, saveUx, saveUy, rdet;
   	double r[1], rA[3];
 
 	acc = 0;
@@ -43,17 +51,17 @@ void update() //Basic MC update step
 		
 		S1 = localS(i);
 
-		d = 1.0; //det_ratio(i);
-		prob = cconj(d)*d*exp(S0-S1);
+		rdet = det_ratio(i, Minv);
+		prob = cconj(rdet)*rdet*exp(S0-S1);
  	 	if(prob >= 1) {
     		R += 1;
-			//update_inverse(i);
+			update_inverse(i, Minv, temp);
   		}
   		else {
     		ranlxd(r,1);
     		if(r[0] < prob) {
       			R += 1;
-				//update_inverse(i);
+				update_inverse(i, Minv, temp);
     		}
     		else {
       		// reject the change, get the old values for A

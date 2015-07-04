@@ -13,6 +13,7 @@
 extern int R;  // Counter of all accepted configurations
 extern int mc_iter;
 
-void update(); //Basic MC update step
+void mc_init();
+void mc_update(); //Basic MC update step
 
 #endif

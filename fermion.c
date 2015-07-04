@@ -14,7 +14,7 @@
 complex double fdet[GRIDPOINTS][GRIDPOINTS];
 complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
-complex double Minv3[GRIDPOINTS][GRIDPOINTS];
+//complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
 int up_counter;
 int g_inverse = 6; //Number of quick inverse updates between hard-core inverse
@@ -181,6 +181,20 @@ void hard_inverse(fmat M)
 
 	matrix_inverse(*M);
 	
+}
+
+void update_inverse(int i, fmat M, fmat temp)
+{
+	if (up_counter < g_inverse) 
+	{
+		up_counter++;
+		quick_update_inverse(i, temp, M);
+	}
+	else 
+	{
+		up_counter = 0; //reset the counter
+		hard_inverse(M);
+	}
 }
 
 void fermion(complex double *out, complex double *in) 
