@@ -16,6 +16,9 @@ complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
+int up_counter;
+int g_inverse = 6; //Number of quick inverse updates between hard-core inverse
+
 double matrix_diff(fmat A1, fmat A2) 
 {
 	int i, j;
@@ -145,33 +148,17 @@ void update_col(const int i, fmat out, fmat in) {
 	}
 }
 
-// update the inverse after At, Ax, Ay at site i are modified
-void update_inverse(const int i, fmat out, fmat temp, fmat in)
+// quick update the inverse after At, Ax, Ay at site i are modified
+void quick_update_inverse(const int i, fmat in, fmat temp)
 {
 	update_row(i, temp, in);
-	update_col(i, out, temp);
-}
-
-void fermion(complex double *out, complex double *in) 
-{
-	int i;
-  	for(i=0; i<GRIDPOINTS; i++) {
-		out[i] = exp(-g_mu)*Ut[i]*in[tp[i]] - in[i] 
-			- g_t*(Ux[i]*in[xp[i]] + cconj(Ux[xm[i]])*in[xm[i]] + Uy[i]*in[yp[i]] + cconj(Uy[ym[i]])*in[ym[i]]);
-	}
-	return;
+	update_col(i, in, temp);
 }
 
 
-/* ****************************************************************************************
- * Test routines 
- * ****************************************************************************************
- */
-
-complex double get_fermion_mat(fmat M)
+void hard_inverse(fmat M)
 {
 	int i, j;
-	complex double r;
 	
 	for(i = 0; i<GRIDPOINTS;i++)
 	{
@@ -188,11 +175,22 @@ complex double get_fermion_mat(fmat M)
 		for(j = 0; j<GRIDPOINTS; j++) 
 			M[i][j] =  fdet[i][j];
 	
-	r = matrix_det(*fdet);
+	//r = matrix_det(*fdet);
 
 	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
 
 	matrix_inverse(*M);
 	
-	return r;
 }
+
+void fermion(complex double *out, complex double *in) 
+{
+	int i;
+  	for(i=0; i<GRIDPOINTS; i++) {
+		out[i] = exp(-g_mu)*Ut[i]*in[tp[i]] - in[i] 
+			- g_t*(Ux[i]*in[xp[i]] + cconj(Ux[xm[i]])*in[xm[i]] + Uy[i]*in[yp[i]] + cconj(Uy[ym[i]])*in[ym[i]]);
+	}
+	return;
+}
+
+

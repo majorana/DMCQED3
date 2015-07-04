@@ -27,9 +27,10 @@ void echo_sim_params();
 
 int main(int argc, char **argv) 
 {
-	int i, j, l;
+	int i, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
+	int up_counter = 0; //Counting matrix quick updates
 	complex double det1, det2, detr;
 
   	/* Initialize the random number generator */
@@ -41,19 +42,19 @@ int main(int argc, char **argv)
   	/* Print out the run parameters */
   	echo_sim_params();
 	
-	det1 = get_fermion_mat(Minv1);
-	i = 26;
+	hard_inverse(Minv1);
+	i = 20;
 	// inverse is stored in Minv
 	At[i] = 3.8;
 	Ax[i] = 2.5;
-	Ay[i] = 1.5;
+	Ay[i] = 0.0;
 	calculatelinkvars();
 	detr = det_ratio(i, Minv1);
-	update_inverse(i, Minv3, Minv2, Minv1);
+	quick_update_inverse(i, Minv1, Minv2); // Minv2 is temporary storage
 	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
-	det2 = get_fermion_mat(Minv1);
-	printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
-	printf("%.12f\n", matrix_diff(Minv1, Minv3));
+	hard_inverse(Minv2);
+	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
+	printf("%.12f\n", matrix_diff(Minv1, Minv2));
 	return 0;
 
   	/* thermalization */

@@ -15,12 +15,14 @@ void fermion(complex double *out, complex double *in);
 complex double det_ratio(const int i, fmat A); 
 void update_row(const int i, fmat out, fmat in);
 void update_col(const int i, fmat out, fmat in);
-void update_inverse(int i, fmat out, fmat temp, fmat in);
+void quick_update_inverse(int i, fmat in, fmat temp);
 
-complex double get_fermion_mat(fmat M);
+void hard_inverse(fmat M);
 
 extern complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 extern complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 extern complex double Minv3[GRIDPOINTS][GRIDPOINTS];
+
+extern int up_counter;
 
 #endif

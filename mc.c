@@ -13,7 +13,7 @@
 int R;
 int mc_iter;
 
-void update() //Basic HMC update step
+void update() //Basic MC update step
 {
  	int i, acc;
 	double saveAt, saveAx, saveAy, prob, S0, S1;
