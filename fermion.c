@@ -46,17 +46,17 @@ void matrix_print(fmat A)
 	return;
 }
 
-complex double prod_row_col(int i, int j, fmat A) 
+complex double prod_row_col(const int i, const int j, fmat A) 
 {
 	return exp(-g_mu)*Ut[i]*A[tp[i]][j] - A[i][j] - g_t*(Ux[i]*A[xp[i]][j] + Uy[i]*A[yp[i]][j] + cconj(Ux[xm[i]])*A[xm[i]][j] + cconj(Uy[ym[i]])*A[ym[i]][j]);
 }
 
-complex double prod_col_row(int i, int j, fmat A) 
+complex double prod_col_row(const int i, const int j, fmat A) 
 {
 	return exp(-g_mu)*Ut[tm[i]]*A[j][tm[i]] - A[j][i] - g_t*(Ux[xm[i]]*A[j][xm[i]] + Uy[ym[i]]*A[j][ym[i]] + cconj(Ux[i])*A[j][xp[i]] + cconj(Uy[i])*A[j][yp[i]]);
 }
 
-complex double prod_row_vec(int i, complex double *v)
+complex double prod_row_vec(const int i, complex double *v)
 {
 	return exp(-g_mu)*Ut[i]*v[tp[i]] - v[i] - g_t*(Ux[i]*v[xp[i]] + Uy[i]*v[yp[i]] + cconj(Ux[xm[i]])*v[xm[i]] + cconj(Uy[ym[i]])*v[ym[i]]);
 }
@@ -145,6 +145,13 @@ void update_col(const int i, fmat out, fmat in) {
 	}
 }
 
+// update the inverse after At, Ax, Ay at site i are modified
+void update_inverse(const int i, fmat out, fmat temp, fmat in)
+{
+	update_row(i, temp, in);
+	update_col(i, out, temp);
+}
+
 void fermion(complex double *out, complex double *in) 
 {
 	int i;
@@ -179,11 +186,11 @@ complex double get_fermion_mat(fmat M)
 
 	for(i = 0; i<GRIDPOINTS;i++) 
 		for(j = 0; j<GRIDPOINTS; j++) 
-			Minv1[i][j] =  fdet[i][j];
+			M[i][j] =  fdet[i][j];
 	
 	r = matrix_det(*fdet);
 
-	printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
+	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
 
 	matrix_inverse(*M);
 	

@@ -243,6 +243,10 @@ void set_zero(complex double *P)
  * *************************************************************
  */
 
+// Notice that all these LAPACK routines use the array passed to them to store results or do some other things. Lots of side-effects.
+
+// We let LAPACKE to handle workspace allocation.
+
 // Need dereference if a 2D array, e.g. a[][] is passed, i.e. matrix_inverse_r(*a)
 int matrix_inverse_r(double *mat)
 {
@@ -281,7 +285,7 @@ int matrix_inverse(complex double *mat)
 double matrix_det_r(double *mat)
 // overall sign is not calculated
 {
-	int i, j;
+	int i;
 	double det = 1.0;
 	lapack_int n, lda, info;
    	lapack_int ipiv[GRIDPOINTS];
@@ -300,7 +304,7 @@ double matrix_det_r(double *mat)
 complex double matrix_det(complex double *mat)
 // overall sign is not calculated
 {
-	int i, j;
+	int i;
 	complex double det = 1.0;
 	lapack_int n, lda, info;
    	lapack_int ipiv[GRIDPOINTS];

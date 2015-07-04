@@ -49,9 +49,7 @@ int main(int argc, char **argv)
 	Ay[i] = 1.5;
 	calculatelinkvars();
 	detr = det_ratio(i, Minv1);
-	update_row(i, Minv2, Minv1);
-	update_col(i, Minv3, Minv2);
-	// result in Minv_spare
+	update_inverse(i, Minv3, Minv2, Minv1);
 	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
 	det2 = get_fermion_mat(Minv1);
 	printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));

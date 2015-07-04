@@ -38,9 +38,11 @@ double S_G(int i)
 }
 
 
-double localSxy(int i)
+double localS(int i)
 {
-	return S_Gtx(i) + S_Gtx(tm[i]) + S_Gty(tm[i]) + S_Gxy(i) + S_Gxy(xm[i]) + S_Gxy(ym[i]);
+	return S_Gtx(i) + S_Gtx(tm[i]) + S_Gtx(xm[i]) +
+		S_Gty(i) + S_Gty(tm[i]) + S_Gty(ym[i]) + 
+		S_Gxy(i) + S_Gxy(xm[i]) + S_Gxy(ym[i]);
 }
 
 void coldstart()

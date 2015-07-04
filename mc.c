@@ -28,7 +28,7 @@ void update() //Basic HMC update step
 		saveAx = Ax[i]; saveUx = Ux[i];
 		saveAy = Ay[i]; saveUy = Uy[i];
 
-		S0 = localSxy(i);
+		S0 = localS(i);
 
 		ranlxd(rA,3);
 
@@ -41,19 +41,19 @@ void update() //Basic HMC update step
 		Ay[i] = 2*M_PI*rA[2];
 		Uy[i] = cos(Ay[i]) + I*sin(Ay[i]);
 		
-		S1 = localSxy(i);
+		S1 = localS(i);
 
 		d = 1.0; //det_ratio(i);
 		prob = cconj(d)*d*exp(S0-S1);
  	 	if(prob >= 1) {
     		R += 1;
-			//update_inverse_Axy(i);
+			//update_inverse(i);
   		}
   		else {
     		ranlxd(r,1);
     		if(r[0] < prob) {
       			R += 1;
-				//update_inverse_Axy(i);
+				//update_inverse(i);
     		}
     		else {
       		// reject the change, get the old values for A

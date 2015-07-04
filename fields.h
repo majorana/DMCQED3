@@ -21,7 +21,6 @@ void hotstart();  //Hot (random) start for the gauge fields
 void calculatelinkvars(); //Sets the values of the compact gauge fields from noncompact ones
 
 double S_G(int i);   //Action of the gauge fields
-double localSt(int i); 
-double localSxy(int i); 
+double localS(int i); 
 
 #endif
