@@ -9,7 +9,6 @@
 #include "lattice.h"
 #include "fermion.h"
 #include "mc.h"
-#include "test.h"
 
 int R;
 int mc_iter;

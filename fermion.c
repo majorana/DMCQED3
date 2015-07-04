@@ -16,13 +16,6 @@ complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
-// pointer to the 2D array
-// should always point to the inverse matrix with the *current* configuration of gauge fields
-// except when the matrices are updated
-fmat Minv;
-// pointer to the spare 2D array
-fmat Minv_spare;
-
 double matrix_diff(complex double (*A1)[GRIDPOINTS],  complex double (*A2)[GRIDPOINTS]) 
 {
 	int i, j;
@@ -135,18 +128,14 @@ void update_col(const int i, fmat out, fmat in) {
 
 	// B^i A_i
 	T = prod_col_row(i, i, in);
-		//exp(-g_mu)*Ut[tm[i]]*Minv[i][tm[i]] - Minv[i][i] - g_t*(Ux[xm[i]]*Minv[i][xm[i]] + Uy[ym[i]]*Minv[i][ym[i]] + cconj(Ux[i])*Minv[i][xp[i]] + cconj(Uy[i])*Minv[i][yp[i]]);
-
 
 	for(j = 0; j < GRIDPOINTS; j++) 
 	{
 		if (j == i) 
 		{
+			// (new A)_i = A_i/T
 			for(k = 0; k < GRIDPOINTS; k++)
-			{
-				// (new A)_i = A_i/T
 				out[j][k] = 1.0/T*in[i][k];
-			}
 		}
 		else
 		{
@@ -160,11 +149,6 @@ void update_col(const int i, fmat out, fmat in) {
 			}
 		}
 	}
-
-	// need to exchange Minv and Minv_spare
-	//temp = Minv;
-	//Minv = Minv_spare;
-	//Minv_spare = temp;
 }
 
 

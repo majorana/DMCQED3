@@ -15,7 +15,6 @@ int * tm;
 /* takes care of the periodic boundary conditions    */
 int init_lattice(const int Nx, const int Ny, const int Nt) {
   	int ix, iy, it, s;
-  	div_t dg;
   	int N = Nx*Ny*Nt;
 
   	xp = (int *)malloc(N*sizeof(int));
