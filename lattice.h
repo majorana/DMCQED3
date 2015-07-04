@@ -11,14 +11,16 @@
 #define GRIDPOINTS (Lx*Ly*Lt)                           //Total number of lattice sites
 
 
-extern int * xp;
-extern int * xm;
-extern int * yp;
-extern int * ym;
-extern int * tp;
-extern int * tm;
+extern int *xp;
+extern int *xm;
+extern int *yp;
+extern int *ym;
+extern int *tp;
+extern int *tm;
 
 
 extern int  init_lattice(const int Nx, const int Ny, const int Nt);      //This procedure initializes the above arrays
+
+extern int idx(int it, int ix, int iy);
 
 #endif

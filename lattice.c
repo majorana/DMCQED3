@@ -40,5 +40,8 @@ int init_lattice(const int Nx, const int Ny, const int Nt) {
   return(0);
 }
 
+int idx(int it, int ix, int iy) {
+	return it*Lx*Ly + ix*Ly + iy;
+}
 
 

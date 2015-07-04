@@ -20,7 +20,6 @@ void mc_init()
 {
 	up_counter = 0;
 	hard_inverse(Minv);
-	matrix_print(Minv);
 }
 
 void mc_update() //Basic MC update step
@@ -55,14 +54,14 @@ void mc_update() //Basic MC update step
 
 		rdet = det_ratio(i, Minv);
 		prob = cconj(rdet)*rdet*exp(S0-S1);
-		//printf("%.8f\n", prob);
+		printf("%.8f\n", prob);
  	 	if(prob >= 1) {
     		R += 1;
 			update_inverse(i, Minv, temp);
 			//matrix_print(Minv);
   		}
   		else {
-    		ranlxd(r,1);
+    		ranlxd(r, 1);
     		if(r[0] < prob) {
       			R += 1;
 				update_inverse(i, Minv, temp);
@@ -79,7 +78,6 @@ void mc_update() //Basic MC update step
  	 
  	//Increase the counter of the total number of MC updates...
  	mc_iter++;
- 	//Return 1 if the configuration was accepted, 0 otherwise
 }
 
 

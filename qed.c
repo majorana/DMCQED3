@@ -14,7 +14,7 @@
 double g_mu = 1.0;
 double g_t = 1.0;
 
-int g_thermalize   = 2;   //Number of MC updates for thermalization
+int g_thermalize   = 10;   //Number of MC updates for thermalization
 int g_measurements = 400;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  2;    //Number of MC updates between the measurements
 
@@ -30,8 +30,7 @@ int main(int argc, char **argv)
 	int i, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
-	int up_counter = 0; //Counting matrix quick updates
-	complex double det1, det2, detr;
+	complex double detr;
 
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
@@ -55,7 +54,7 @@ int main(int argc, char **argv)
 	hard_inverse(Minv2);
 	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
 	printf("%.12f\n", matrix_diff(Minv1, Minv2));
-
+	return 0;
 
 	mc_init();
   	/* thermalization */
@@ -78,9 +77,9 @@ int main(int argc, char **argv)
    	/* do g_intermediate updates before measurement */
    		for (l=0; l<g_intermediate; l++)
    		{
-    		update();
+    		mc_update();
    		};
-   		update();
+   		mc_update();
    	/* Measurements should go here... */
   
   	};

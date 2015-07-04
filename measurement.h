@@ -9,17 +9,11 @@
  * Pair correlation function c_{i,up}c_{i,down} is a gauge-invariant quantity because up and down have opposite charges. 
  */
 
-complex double Wilsonloop(int i, int lx, int ly)
-{
-}
+void measurement_init();
 
-double density(int i)
-{
-}
+complex double Wilsonloop(int i, int lx, int ly);
 
-double density-density(int i, int j)
-{
-
-}
+double density(int i);
+double density-density(int i, int j);
 
 #endif
