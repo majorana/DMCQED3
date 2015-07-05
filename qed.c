@@ -11,17 +11,21 @@
 #include "fermion.h"
 #include "linalg.h"
 
-/* global variables */
+/* ***************************************************************************************************************** */
+// global variables 
+
 double g_mu = 1.0;
 double g_t = 1.0;
-double dt = 8.0/Lt;
+double dt = 10.0/Lt;
 double beta0  = 1;
 double beta   = 1;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
-
-int g_thermalize   = 0;   //Number of MC updates for thermalization
+int g_thermalize   = 0;   //Number of MC updates for thermalization; probably ~ 1000 or even more is needed
 int g_measurements = 100;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  10;    //Number of MC updates between the measurements
+
+/* ***************************************************************************************************************** */
+
 int measure_iter = 0;
 
 void echo_sim_params();
@@ -86,7 +90,7 @@ int main(int argc, char **argv)
 
 void echo_sim_params()
 {
- 	printf("Quantum Monte-Carlo for U(1) gauge theory with spinor Fermi surface\n\n");
+ 	printf("\n Quantum Monte-Carlo for U(1) gauge theory with spinor Fermi surface\n\n");
  	printf("Run parameters:\n");
  	printf("\t Beta0:                            %2.4lf\n",  beta0);
 	printf("\t Beta:                            %2.4lf\n",  beta);

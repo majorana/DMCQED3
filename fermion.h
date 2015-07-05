@@ -8,6 +8,8 @@
 
 #include "linalg.h"
 
+#define REINVERSE 40
+
 typedef complex double (*fmat)[GRIDPOINTS];
 
 void fermion(complex double *out, complex double *in);

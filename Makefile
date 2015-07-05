@@ -1,4 +1,13 @@
+UNAME_S := $(shell uname -s)
+
 CC = gcc -std=c99 -pedantic -Wall -O3
+
+ifeq ($(UNAME_S), Linux)
+    LINKER = gcc -I/opt/intel/mkl/include -L/opt/intel/mkl/lib/intel64 -lmkl_lapack95_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp -lpthread
+endif
+ifeq ($(UNAME_S), Darwin)
+    LINKER = gfortran /usr/local/lib/liblapacke.a /usr/local/lib/liblapack.a /usr/local/lib/libblas.a
+endif
 
 all: qed
 
@@ -30,7 +39,7 @@ qed.o: qed.c fields.h lattice.h linalg.h mc.h complex/complex.h Makefile rand/ra
 	$(CC) -c $< -o $@
 
 qed: fields.o qed.o mc.o lattice.o linalg.o  ranlxd.o gauss.o fermion.o measurement.o Makefile
-	gfortran /usr/local/lib/liblapacke.a /usr/local/lib/liblapack.a /usr/local/lib/libblas.a qed.o fields.o mc.o lattice.o linalg.o ranlxd.o gauss.o fermion.o measurement.o -o qed -lm
+	$(LINKER) qed.o fields.o mc.o lattice.o linalg.o ranlxd.o gauss.o fermion.o measurement.o -o qed -lm
 
 clean:
 	rm -f *.o qed test1 test2

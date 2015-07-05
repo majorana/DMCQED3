@@ -1,7 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "lapack/lapacke.h"
+
+#ifdef __APPLE__ // on laptop
+	#include "lapack/lapacke.h"
+#elif __linux // on linux machine with MKL, Q1 cluster 
+	#include <mkl.h>
+#endif
+
 #include "complex/complex.h"
 #include "lattice.h"
 #include "linalg.h"
