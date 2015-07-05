@@ -16,13 +16,13 @@
 
 double g_mu = 1.0;
 double g_t = 1.0;
-double dt = 10.0/Lt;
+double dt = 8.0/(double)Lt;
 double beta0  = 1;
 double beta   = 1;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
 int g_thermalize   = 0;   //Number of MC updates for thermalization; probably ~ 1000 or even more is needed
-int g_measurements = 100;    //Number of measurements (statistically independent configurations)
-int g_intermediate =  10;    //Number of MC updates between the measurements
+int g_measurements = 20;    //Number of measurements (statistically independent configurations)
+int g_intermediate =  0;    //Number of MC updates between the measurements
 
 /* ***************************************************************************************************************** */
 
@@ -30,12 +30,13 @@ int measure_iter = 0;
 
 void echo_sim_params();
 
+void output_measurement();
+
 int main(int argc, char **argv) 
 {
 	int i, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
-	complex double w;
 
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
@@ -69,15 +70,18 @@ int main(int argc, char **argv)
     		mc_update();
    		};
    		mc_update();
+
 		/* doing measurement */
   		density(Minv);
-		w += wilson_loop(1);
+		density_correlation(Minv);
+		wilson_loop(1);
+		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
+		printf("Wilson plaquette: \t %.5f %.5f\n", creal(m_wilson[measure_iter][1]), cimag(m_wilson[measure_iter][1]));
 		measure_iter++;
   	};
+	output_measurement();
  	measurement_finish();
 	
-	printf("%.5f\n", cabs(w/g_measurements));
-
   	/* Some output for diagnostics */
   	total_updates = g_measurements*(g_intermediate + 1)*GRIDPOINTS;
   	printf("\n\n Algorithm performance:\n");
@@ -97,6 +101,36 @@ void echo_sim_params()
  	printf("\t Number of measurements:          %i\n",      g_measurements);
  	printf("\t MC updates between measurements: %i\n",      g_intermediate);
 	printf("\n\n");
+}
+
+void output_measurement()
+{
+	int i, j, k;
+	FILE *fp;
+
+	fp = fopen("density.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+		fprintf(fp, "%.5f %.5f\n", creal(m_density[i]), cimag(m_density[i]));
+	fclose(fp);
+
+	fp = fopen("wilson.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+	{
+		for(j = 0; j < Lx/2; j++)
+			fprintf(fp, "\t %.5f %.5f", creal(m_wilson[i][j]), cimag(m_wilson[i][j]));
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+	
+	fp = fopen("density_corr.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+	{
+		for(j = 0; j < Lx; j++)
+			for(k = 0; k < Ly; k++)
+				fprintf(fp, "\t %.5f %.5f", creal(m_density_corr[i][j][k]), cimag(m_density_corr[i][j][k]) );
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
 }
 
 void test()
