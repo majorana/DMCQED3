@@ -6,6 +6,11 @@
 #include "fermion.h"
 
 complex double (*m_density)[Lx*Ly];
+complex double (*m_polyakov)[Lx*Ly];
+
+void polyakov_loop(int x, int y)
+{
+}
 
 void measurement_init()
 {
@@ -41,4 +46,10 @@ void density(fmat G)
 	printf("\n");
 }
 
+// <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i> 
+
+void density_correlation(fmat G)
+{
+	return;
+}
 
