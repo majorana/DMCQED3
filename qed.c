@@ -37,8 +37,6 @@ int main(int argc, char **argv)
   	int total_updates = 0;   //Total number of updates
 	complex double w;
 
-	w = 0.0;
-
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
   	/* Initialize the lattice geometry */
@@ -73,7 +71,7 @@ int main(int argc, char **argv)
    		mc_update();
 		/* doing measurement */
   		density(Minv);
-		w += wilson_loop(1,1);
+		w += wilson_loop(1);
 		measure_iter++;
   	};
  	measurement_finish();

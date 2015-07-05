@@ -5,21 +5,27 @@
 #include "fields.h"
 #include "fermion.h"
 
-complex double (*m_density)[Lx*Ly];
+complex double (*m_density_profile)[Lx*Ly];
+complex double (*m_density);
 complex double (*m_density_corr)[Lx][Ly];
 complex double (*m_polyakov)[Lx*Ly];
+complex double (*m_wilson)[Lx/2];
 
 void measurement_init()
 {
 	measure_iter = 0;
-	m_density = malloc(g_measurements*Lx*Ly*sizeof(complex double));
+	m_density_profile = malloc(g_measurements*Lx*Ly*sizeof(complex double));
+	m_density = malloc(g_measurements*sizeof(complex double));
 	m_density_corr = malloc(g_measurements*Lx*Ly*sizeof(complex double));
+	m_wilson = malloc(g_measurements*(Lx/2)*sizeof(complex double));
 }
 
 void measurement_finish()
 {
+	free(m_density_profile);
 	free(m_density);
 	free(m_density_corr);
+	free(m_wilson);
 }
 
 complex double polyakov_loop(int x, int y)
@@ -33,7 +39,7 @@ complex double polyakov_loop(int x, int y)
 	return Px;
 }
 
-complex double wilson_loop(int nx, int nt)
+complex double wilson_loop1(int nx, int nt)
 {
 	// nx: spatial extension, say x direction
 	// nt: time extension
@@ -67,8 +73,17 @@ complex double wilson_loop(int nx, int nt)
 		avgw += w;
 	}
 	avgw /= GRIDPOINTS;
-	printf("Wilson loop: \t %.4f+I*%.4f\n", creal(avgw), cimag(avgw));
+	//printf("Wilson loop: \t %.4f+I*%.4f\n", creal(avgw), cimag(avgw));
 	return avgw;
+}
+
+void wilson_loop(int nt) 
+{
+	int i;
+	for (i = 0; i<Lx/2; i++)
+	{
+		m_wilson[measure_iter][i] = wilson_loop1(i, nt);
+	}
 }
 
 void density(fmat G)
@@ -82,15 +97,16 @@ void density(fmat G)
 		for(j = 0; j<Ly; j++) 
 		{
 			s = idx(0, i, j);
-			m_density[measure_iter][s] = 0.0 + I*0.0;
+			m_density_profile[measure_iter][s] = 0.0 + I*0.0;
 			for (k=0; k<Lt;k++)
-				m_density[measure_iter][s] += G[idx(k, i, j)][idx(k, i, j)];
-			m_density[measure_iter][s] /= Lt;
+				m_density_profile[measure_iter][s] += G[idx(k, i, j)][idx(k, i, j)];
+			m_density_profile[measure_iter][s] /= Lt;
 			//printf("%.4f+I*%.4f, ", creal(m_density[measure_iter][s]), cimag(m_density[measure_iter][s]));
-			avg += m_density[measure_iter][s];
+			avg += m_density_profile[measure_iter][s];
 		}
 	}
-	printf("Average density: \t %.4f+I*%.4f\n", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
+	m_density[measure_iter] = avg;
+	//printf("Average density: \t %.4f+I*%.4f\n", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
 }
 
 // <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i>. The second term is the connected component 
@@ -116,4 +132,5 @@ void density_correlation(fmat G)
 	}
 	return;
 }
+
 
