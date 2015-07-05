@@ -17,7 +17,7 @@ complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 //complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
 int up_counter;
-int g_inverse = 20; //Number of quick inverse updates between hard-core inverse
+int g_inverse = 40; //Number of quick inverse updates between hard-core inverse
 
 double matrix_diff(fmat A1, fmat A2) 
 {

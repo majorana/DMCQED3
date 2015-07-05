@@ -15,13 +15,13 @@
 double g_mu = 1.0;
 double g_t = 1.0;
 double dt = 8.0/Lt;
-double beta0  = 1.0;
-double beta   = 1.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
+double beta0  = 1;
+double beta   = 1;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
 
 int g_thermalize   = 0;   //Number of MC updates for thermalization
-int g_measurements = 400;    //Number of measurements (statistically independent configurations)
-int g_intermediate =  0;    //Number of MC updates between the measurements
+int g_measurements = 100;    //Number of measurements (statistically independent configurations)
+int g_intermediate =  10;    //Number of MC updates between the measurements
 int measure_iter = 0;
 
 void echo_sim_params();
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
    		mc_update();
 		/* doing measurement */
   		density(Minv);
-		w += wilson_loop(3,1);
+		w += wilson_loop(1,1);
 		measure_iter++;
   	};
  	measurement_finish();
