@@ -37,4 +37,11 @@ int idx(int it, int ix, int iy) {
 	return MOD(it, Lt)*Lx*Ly + MOD(ix, Lx)*Ly + MOD(iy, Ly);
 }
 
-
+void coordiate(int i, int *it, int *ix, int *iy) 
+{
+	int j;
+	*it = i/(Lx*Ly);
+	j = i%(Lx*Ly);
+	*ix = j/Ly;
+	*iy = j%Ly;
+}

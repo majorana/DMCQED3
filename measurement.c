@@ -6,7 +6,19 @@
 #include "fermion.h"
 
 complex double (*m_density)[Lx*Ly];
+complex double (*m_density_corr)[Lx][Ly];
 complex double (*m_polyakov)[Lx*Ly];
+
+void measurement_init()
+{
+	measure_iter = 0;
+	m_density = malloc(g_measurements*Lx*Ly*sizeof(complex double));
+}
+
+void measurement_finish()
+{
+	free(m_density);
+}
 
 complex double polyakov_loop(int x, int y)
 {
@@ -55,17 +67,6 @@ complex double wilson_loop(int nx, int nt)
 	return avgw/GRIDPOINTS;
 }
 
-void measurement_init()
-{
-	measure_iter = 0;
-	m_density = malloc(g_measurements*Lx*Ly*sizeof(complex double));
-}
-
-void measurement_finish()
-{
-	free(m_density);
-}
-
 void density(fmat G)
 // average over time
 {
@@ -85,14 +86,30 @@ void density(fmat G)
 			avg += m_density[measure_iter][s];
 		}
 	}
-	printf("\n Average over space-time: %.4f+I*%.4f ", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
-	printf("\n");
+	printf("Average over space-time: %.4f+I*%.4f\n", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
 }
 
 // <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i> 
-
+// calculate 1/N\sum_x n(x) n(x+y), also average over time
 void density_correlation(fmat G)
 {
+	int it, ix, iy, i, j;
+	int nx, ny;
+	complex double c;
+	for(nx = 0; nx < Lx; nx++)
+	{
+		for(ny = 0; ny < Ly; ny++)
+		{
+			c = 0.0 + 0.0*I;
+			for(i = 0; i<GRIDPOINTS; i++)
+			{
+				coordiate(i, &it, &ix, &iy);
+				j = idx(it, ix + nx, iy + ny);
+				c += G[i][j]*G[j][i];
+			}
+			m_density_corr[measure_iter][nx][ny] = c/(Lx*Ly);
+		}
+	}
 	return;
 }
 
