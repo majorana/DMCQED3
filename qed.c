@@ -6,6 +6,7 @@
 #include "lattice.h"
 #include "mc.h"
 #include "fields.h"
+#include "measurement.h"
 
 #include "fermion.h"
 #include "linalg.h"
@@ -14,9 +15,10 @@
 double g_mu = 1.0;
 double g_t = 1.0;
 
-int g_thermalize   = 10;   //Number of MC updates for thermalization
-int g_measurements = 400;    //Number of measurements (statistically independent configurations)
-int g_intermediate =  2;    //Number of MC updates between the measurements
+int g_thermalize   = 20;   //Number of MC updates for thermalization
+int g_measurements = 100;    //Number of measurements (statistically independent configurations)
+int g_intermediate =  0;    //Number of MC updates between the measurements
+int measure_iter = 0;
 
 /* extern in fields.h   */
 
@@ -54,7 +56,6 @@ int main(int argc, char **argv)
 	hard_inverse(Minv2);
 	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
 	printf("%.12f\n", matrix_diff(Minv1, Minv2));
-	return 0;
 
 	mc_init();
   	/* thermalization */
@@ -63,15 +64,15 @@ int main(int argc, char **argv)
   	for(i=0; i<g_thermalize; i++)
   	{
    		mc_update();
-		printf("\t Step %04i\n", i);
+		//printf("\t Step %04i\n", i);
   	};
-	return 0;
 
 	/* measure the iterations only during real simulation, not thermalization */
   	R              = 0; //Counts the total number of accepted configurations
   	mc_iter       = 0; //Counts the total number of calls to the update() routine
 
   	printf("\n Generation: \n\n");
+	measurement_init();
   	for(i=0; i<g_measurements; i++) 
   	{
    	/* do g_intermediate updates before measurement */
@@ -80,10 +81,12 @@ int main(int argc, char **argv)
     		mc_update();
    		};
    		mc_update();
-   	/* Measurements should go here... */
-  
+		/* doing measurement */
+  		density(Minv);
+		measure_iter++;
   	};
- 
+ 	measurement_finish();
+
   	/* Some output for diagnostics */
   	total_updates = g_measurements*(g_intermediate + 1)*GRIDPOINTS;
   	printf("\n\n Algorithm performance:\n");

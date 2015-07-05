@@ -53,8 +53,9 @@ void mc_update() //Basic MC update step
 		S1 = localS(i);
 
 		rdet = det_ratio(i, Minv);
+		//rdet = 1.0;
 		prob = cconj(rdet)*rdet*exp(S0-S1);
-		printf("%.8f\n", prob);
+		//printf("%.8f\n", prob);
  	 	if(prob >= 1) {
     		R += 1;
 			update_inverse(i, Minv, temp);

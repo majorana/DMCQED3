@@ -180,7 +180,7 @@ void hard_inverse(fmat M)
 	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
 
 	matrix_inverse(*M);
-	matrix_print(M);
+	//matrix_print(M);
 }
 
 void update_inverse(int i, fmat M, fmat temp)
