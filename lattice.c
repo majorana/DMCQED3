@@ -33,7 +33,8 @@ int init_lattice()
   return(0);
 }
 
-int idx(int it, int ix, int iy) {
+int idx(int it, int ix, int iy) 
+{
 	return MOD(it, Lt)*Lx*Ly + MOD(ix, Lx)*Ly + MOD(iy, Ly);
 }
 

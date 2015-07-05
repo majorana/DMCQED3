@@ -12,18 +12,17 @@
 #include "linalg.h"
 
 /* global variables */
-double g_mu = 2.0;
+double g_mu = 1.0;
 double g_t = 1.0;
+double dt = 8.0/Lt;
+double beta0  = 1.0;
+double beta   = 1.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
-int g_thermalize   = 20;   //Number of MC updates for thermalization
-int g_measurements = 100;    //Number of measurements (statistically independent configurations)
+
+int g_thermalize   = 0;   //Number of MC updates for thermalization
+int g_measurements = 400;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  0;    //Number of MC updates between the measurements
 int measure_iter = 0;
-
-/* extern in fields.h   */
-
-double beta0  = 1.0;
-double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
 void echo_sim_params();
 
@@ -32,6 +31,9 @@ int main(int argc, char **argv)
 	int i, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
+	complex double w;
+
+	w = 0.0;
 
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
@@ -67,9 +69,12 @@ int main(int argc, char **argv)
    		mc_update();
 		/* doing measurement */
   		density(Minv);
+		w += wilson_loop(3,1);
 		measure_iter++;
   	};
  	measurement_finish();
+	
+	printf("%.5f\n", cabs(w/g_measurements));
 
   	/* Some output for diagnostics */
   	total_updates = g_measurements*(g_intermediate + 1)*GRIDPOINTS;

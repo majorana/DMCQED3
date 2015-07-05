@@ -13,11 +13,13 @@ void measurement_init()
 {
 	measure_iter = 0;
 	m_density = malloc(g_measurements*Lx*Ly*sizeof(complex double));
+	m_density_corr = malloc(g_measurements*Lx*Ly*sizeof(complex double));
 }
 
 void measurement_finish()
 {
 	free(m_density);
+	free(m_density_corr);
 }
 
 complex double polyakov_loop(int x, int y)
@@ -64,7 +66,9 @@ complex double wilson_loop(int nx, int nt)
 		}
 		avgw += w;
 	}
-	return avgw/GRIDPOINTS;
+	avgw /= GRIDPOINTS;
+	printf("Wilson loop: \t %.4f+I*%.4f\n", creal(avgw), cimag(avgw));
+	return avgw;
 }
 
 void density(fmat G)
@@ -86,10 +90,10 @@ void density(fmat G)
 			avg += m_density[measure_iter][s];
 		}
 	}
-	printf("Average over space-time: %.4f+I*%.4f\n", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
+	printf("Average density: \t %.4f+I*%.4f\n", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
 }
 
-// <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i> 
+// <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i>. The second term is the connected component 
 // calculate 1/N\sum_x n(x) n(x+y), also average over time
 void density_correlation(fmat G)
 {

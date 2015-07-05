@@ -17,7 +17,7 @@ complex double Minv2[GRIDPOINTS][GRIDPOINTS];
 //complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
 int up_counter;
-int g_inverse = 6; //Number of quick inverse updates between hard-core inverse
+int g_inverse = 20; //Number of quick inverse updates between hard-core inverse
 
 double matrix_diff(fmat A1, fmat A2) 
 {
@@ -51,17 +51,17 @@ void matrix_print(fmat A)
 
 complex double prod_row_col(const int i, const int j, fmat A) 
 {
-	return exp(-g_mu)*Ut[i]*A[tp[i]][j] - A[i][j] - g_t*(Ux[i]*A[xp[i]][j] + Uy[i]*A[yp[i]][j] + cconj(Ux[xm[i]])*A[xm[i]][j] + cconj(Uy[ym[i]])*A[ym[i]][j]);
+	return exp(-g_mu)*Ut[i]*A[tp[i]][j] - (1.0)*A[i][j] - dt*g_t*(Ux[i]*A[xp[i]][j] + Uy[i]*A[yp[i]][j] + cconj(Ux[xm[i]])*A[xm[i]][j] + cconj(Uy[ym[i]])*A[ym[i]][j]);
 }
 
 complex double prod_col_row(const int i, const int j, fmat A) 
 {
-	return exp(-g_mu)*Ut[tm[i]]*A[j][tm[i]] - A[j][i] - g_t*(Ux[xm[i]]*A[j][xm[i]] + Uy[ym[i]]*A[j][ym[i]] + cconj(Ux[i])*A[j][xp[i]] + cconj(Uy[i])*A[j][yp[i]]);
+	return exp(-g_mu)*Ut[tm[i]]*A[j][tm[i]] - (1.0)*A[j][i] - dt*g_t*(Ux[xm[i]]*A[j][xm[i]] + Uy[ym[i]]*A[j][ym[i]] + cconj(Ux[i])*A[j][xp[i]] + cconj(Uy[i])*A[j][yp[i]]);
 }
 
 complex double prod_row_vec(const int i, complex double *v)
 {
-	return exp(-g_mu)*Ut[i]*v[tp[i]] - v[i] - g_t*(Ux[i]*v[xp[i]] + Uy[i]*v[yp[i]] + cconj(Ux[xm[i]])*v[xm[i]] + cconj(Uy[ym[i]])*v[ym[i]]);
+	return exp(-g_mu)*Ut[i]*v[tp[i]] - (1.0)*v[i] - dt*g_t*(Ux[i]*v[xp[i]] + Uy[i]*v[yp[i]] + cconj(Ux[xm[i]])*v[xm[i]] + cconj(Uy[ym[i]])*v[ym[i]]);
 }
 
 complex double det_ratio(const int i, fmat A) {
@@ -163,8 +163,8 @@ void hard_inverse(fmat M)
 	for(i = 0; i<GRIDPOINTS;i++)
 	{
 		set_zero(fdet[i]);
-		fdet[i][tp[i]] = exp(-g_mu)*Ut[i];
-		fdet[i][i] = -1.0;
+		fdet[i][tp[i]] = Ut[i];
+		fdet[i][i] = -1.0-g_mu;
 		fdet[i][xp[i]] = -g_t*Ux[i];
 		fdet[i][xm[i]] = -g_t*cconj(Ux[xm[i]]);
 		fdet[i][yp[i]] = -g_t*Uy[i];

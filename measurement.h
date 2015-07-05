@@ -21,6 +21,7 @@ extern int measure_iter;
 void measurement_init();
 void measurement_finish();
 
+complex double wilson_loop(int nx, int nt);
 void density(fmat G);
 void density_correlation(fmat G);
 

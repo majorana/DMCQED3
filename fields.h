@@ -9,6 +9,7 @@
 /* declared in qed.c */
 extern double g_mu;
 extern double g_t;
+extern double dt;
 extern double beta0, beta;
 
 extern double At[GRIDPOINTS], Ax[GRIDPOINTS], Ay[GRIDPOINTS];         //Non-compact real-valued gauge fields
