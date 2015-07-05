@@ -3,7 +3,7 @@ UNAME_S := $(shell uname -s)
 CC = gcc -std=c99 -pedantic -Wall -O3
 
 ifeq ($(UNAME_S), Linux)
-    LINKER = gcc -I/opt/intel/mkl/include -L/opt/intel/mkl/lib/intel64 -lmkl_lapack95_lp64 -lmkl_intel_lp64 -lmkl_intel_thread -lmkl_core -openmp -lpthread
+    LINKER = gcc -I/opt/intel/mkl/include -L/opt/intel/mkl/lib/intel64 -lmkl_intel_lp64  -lmkl_core -lmkl_intel_thread -liomp5 -ldl -lpthread -lm
 endif
 ifeq ($(UNAME_S), Darwin)
     LINKER = gfortran /usr/local/lib/liblapacke.a /usr/local/lib/liblapack.a /usr/local/lib/libblas.a
