@@ -34,7 +34,7 @@ int init_lattice()
 }
 
 int idx(int it, int ix, int iy) {
-	return it*Lx*Ly + ix*Ly + iy;
+	return MOD(it, Lt)*Lx*Ly + MOD(ix, Lx)*Ly + MOD(iy, Ly);
 }
 
 

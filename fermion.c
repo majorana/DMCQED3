@@ -200,7 +200,8 @@ void update_inverse(int i, fmat M, fmat temp)
 void fermion(complex double *out, complex double *in) 
 {
 	int i;
-  	for(i=0; i<GRIDPOINTS; i++) {
+  	for(i=0; i<GRIDPOINTS; i++) 
+	{
 		out[i] = exp(-g_mu)*Ut[i]*in[tp[i]] - in[i] 
 			- g_t*(Ux[i]*in[xp[i]] + cconj(Ux[xm[i]])*in[xm[i]] + Uy[i]*in[yp[i]] + cconj(Uy[ym[i]])*in[ym[i]]);
 	}

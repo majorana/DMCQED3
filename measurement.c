@@ -8,8 +8,51 @@
 complex double (*m_density)[Lx*Ly];
 complex double (*m_polyakov)[Lx*Ly];
 
-void polyakov_loop(int x, int y)
+complex double polyakov_loop(int x, int y)
 {
+	// x, y are spatial coordinates
+	int i;
+	complex double Px;
+	Px = 1.0 + 0.0*I;
+	for(i = 0; i<Lt; i++)
+		Px *= Ut[idx(i, x, y)];
+	return Px;
+}
+
+complex double wilson_loop(int nx, int nt)
+{
+	// nx: spatial extension, say x direction
+	// nt: time extension
+	int i, j, kx, kt;
+	complex double w, avgw;
+	avgw = 0.0 + 0.0*I;
+	for(i = 0; i < GRIDPOINTS; i++)
+	{
+		j = i;
+		w = 1.0 + 0.0*I;
+		// going from j to j+ nx*e_x
+		for(kx = 0; kx < nx; kx++) {
+			w *= Ux[j];
+			j = xp[j];
+		}
+		// going from j+nx*e_x to j+nx*ex+nt*et
+		for(kt = 0; kt < nt; kt++) {
+			w *= Ut[j];
+			j = tp[j];
+		}
+		// going from j+nx*ex+nt*et back to j+nt*et
+		for(kx = 0; kx < nx; kx++) {
+			w *= cconj(Ux[j]);
+			j = xm[j];
+		}
+		// going from j+nt*et back to j
+		for(kt = 0; kt < nt; kt++) {
+			w *= cconj(Ut[j]);
+			j = tm[j];
+		}
+		avgw += w;
+	}
+	return avgw/GRIDPOINTS;
 }
 
 void measurement_init()
