@@ -10,7 +10,7 @@ complex double (*m_density)[Lx*Ly];
 void measurement_init()
 {
 	measure_iter = 0;
-	m_density = malloc(g_measurements*Lx*Ly*sizeof(int));
+	m_density = malloc(g_measurements*Lx*Ly*sizeof(complex double));
 }
 
 void measurement_finish()

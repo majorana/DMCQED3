@@ -12,7 +12,7 @@
 #include "linalg.h"
 
 /* global variables */
-double g_mu = 1.0;
+double g_mu = 2.0;
 double g_t = 1.0;
 
 int g_thermalize   = 20;   //Number of MC updates for thermalization
@@ -23,7 +23,7 @@ int measure_iter = 0;
 /* extern in fields.h   */
 
 double beta0  = 1.0;
-double beta   = 1.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
+double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
 void echo_sim_params();
 
@@ -32,7 +32,6 @@ int main(int argc, char **argv)
 	int i, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
-	complex double detr;
 
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
@@ -42,20 +41,6 @@ int main(int argc, char **argv)
   	hotstart();
   	/* Print out the run parameters */
   	echo_sim_params();
-	
-	hard_inverse(Minv1);
-	i = 20;
-	// inverse is stored in Minv
-	At[i] = 3.8;
-	Ax[i] = 2.5;
-	Ay[i] = 0.0;
-	calculatelinkvars();
-	detr = det_ratio(i, Minv1);
-	quick_update_inverse(i, Minv1, Minv2); // Minv2 is temporary storage
-	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
-	hard_inverse(Minv2);
-	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
-	printf("%.12f\n", matrix_diff(Minv1, Minv2));
 
 	mc_init();
   	/* thermalization */
@@ -66,7 +51,6 @@ int main(int argc, char **argv)
    		mc_update();
 		//printf("\t Step %04i\n", i);
   	};
-
 	/* measure the iterations only during real simulation, not thermalization */
   	R              = 0; //Counts the total number of accepted configurations
   	mc_iter       = 0; //Counts the total number of calls to the update() routine
@@ -90,7 +74,7 @@ int main(int argc, char **argv)
   	/* Some output for diagnostics */
   	total_updates = g_measurements*(g_intermediate + 1)*GRIDPOINTS;
   	printf("\n\n Algorithm performance:\n");
-  	printf("\t Acceptance rate:             %.3f\n", (double)R/(double)total_updates);
+  	printf("\t Acceptance rate:             %.4f\n", (double)R/(double)total_updates);
 
   	return 0;
 }
@@ -106,4 +90,25 @@ void echo_sim_params()
  	printf("\t Number of measurements:          %i\n",      g_measurements);
  	printf("\t MC updates between measurements: %i\n",      g_intermediate);
 	printf("\n\n");
+}
+
+void test()
+{
+	int i;
+	complex double detr;
+
+	hard_inverse(Minv1);
+	i = 20;
+	// inverse is stored in Minv
+	At[i] = 3.8;
+	Ax[i] = 2.5;
+	Ay[i] = 0.0;
+	calculatelinkvars();
+	detr = det_ratio(i, Minv1);
+	quick_update_inverse(i, Minv1, Minv2); // Minv2 is temporary storage
+	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
+	hard_inverse(Minv2);
+	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
+	printf("%.12f\n", matrix_diff(Minv1, Minv2));
+
 }
