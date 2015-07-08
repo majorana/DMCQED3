@@ -25,7 +25,7 @@ double S_Gty(int i)
 
 double S_Gxy(int i)
 {
-	return -beta*cos(Ax[i] + Ay[xp[i]] - Ax[yp[i]] - Ay[i]);
+	return -beta*dt*cos(Ax[i] + Ay[xp[i]] - Ax[yp[i]] - Ay[i]);
 }
 
 

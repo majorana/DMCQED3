@@ -19,10 +19,8 @@ void fermion(complex double *out, complex double *in);
 complex double det_ratio_t(const int i, fmat A); 
 complex double det_ratio_xy(const int i, fmat A); 
 
-void update_row(const int i, fmat out, fmat in);
-void update_col(const int i, fmat out, fmat in);
 //void quick_update_inverse(int i, fmat in, fmat temp);
-complex double hard_inverse(fmat M);
+void hard_inverse(fmat M);
 void update_inverse(int i, fmat M);
 
 extern int up_counter;

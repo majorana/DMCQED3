@@ -24,4 +24,6 @@ void calculatelinkvars(); //Sets the values of the compact gauge fields from non
 double S_G(int i);   //Action of the gauge fields
 double localS(int i); 
 
+double S_Gtx(int i);
+
 #endif

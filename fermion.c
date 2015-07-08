@@ -213,9 +213,9 @@ void quick_update_inverse(const int i, fmat in, fmat temp1, fmat temp2)
 }
 
 
-complex double hard_inverse(fmat M)
+void hard_inverse(fmat M)
 {
-	int i, j;
+	int i, j, info;
 	complex double r;
 	
 	for(i = 0; i<GRIDPOINTS;i++)
@@ -229,17 +229,18 @@ complex double hard_inverse(fmat M)
 		M[i][tp[ym[i]]] = dt*Ut[i]*cconj(Uy[tp[ym[i]]]);
 	}
 
-	for(i = 0;i<GRIDPOINTS;i++)
-		for(j = 0;j < GRIDPOINTS;j++)
-			fdet[i][j] = M[i][j];
+	//for(i = 0;i<GRIDPOINTS;i++)
+	//	for(j = 0;j < GRIDPOINTS;j++)
+	//		fdet[i][j] = M[i][j];
 
-	r = matrix_det(*fdet);
+	//r = matrix_det(*fdet);
 
 	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
 
-	matrix_inverse(*M);
+	info = matrix_inverse(*M);
+	//printf("%d\n", info);
 	//matrix_print(M);
-	return r;
+	//return r;
 }
 
 void update_inverse(int i, fmat M)

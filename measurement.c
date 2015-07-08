@@ -109,6 +109,16 @@ void density(fmat G)
 	//printf("Average density: \t %.4f+I*%.4f\n", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
 }
 
+double mean_plaq()
+{
+	int i;
+	double mp = 0.0;
+	for (i = 0; i < GRIDPOINTS; i++) 
+	{
+		mp += S_Gtx(i);
+	}
+	return mp/GRIDPOINTS;
+}
 // <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i>. The second term is the connected component 
 // calculate 1/N\sum_x n(x) n(x+y), also average over time
 void density_correlation(fmat G)

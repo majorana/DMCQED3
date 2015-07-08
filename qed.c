@@ -14,14 +14,14 @@
 /* ***************************************************************************************************************** */
 // global variables 
 
-double g_mu = 0.0;
+double g_mu = 1.5;
 double g_t = 1.0;
 double dt = 8.0/(double)Lt;
-double beta0  = 1;
-double beta   = 1;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
+double beta0  = 1.0;
+double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
 int g_thermalize   = 0;   //Number of MC updates for thermalization; probably ~ 1000 or even more is needed
-int g_measurements = 20;    //Number of measurements (statistically independent configurations)
+int g_measurements = 200;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  0;    //Number of MC updates between the measurements
 
 /* ***************************************************************************************************************** */
@@ -45,12 +45,12 @@ int main(int argc, char **argv)
   	/* Initialize the lattice geometry */
   	init_lattice(Lx, Ly, Lt);
   	/* Initialize the fields */
-  	hotstart();
+  	coldstart();
   	/* Print out the run parameters */
   	echo_sim_params();
 	
-	test();
-	return 0;
+	//test();
+	//return 0;
 
 	mc_init();
   	/* thermalization */
@@ -67,6 +67,11 @@ int main(int argc, char **argv)
 
   	printf("\n Generation: \n\n");
 	measurement_init();
+ 	density(Minv);
+	wilson_loop(1);
+	printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter])/dt, cimag(m_density[measure_iter])/dt);
+	printf("Wilson plaquette: \t %.5f\n", mean_plaq());
+
   	for(i=0; i<g_measurements; i++) 
   	{
    	/* do g_intermediate updates before measurement */
@@ -80,8 +85,10 @@ int main(int argc, char **argv)
   		density(Minv);
 		density_correlation(Minv);
 		wilson_loop(1);
-		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
-		printf("Wilson plaquette: \t %.5f %.5f\n", creal(m_wilson[measure_iter][1]), cimag(m_wilson[measure_iter][1]));
+		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter])/dt, cimag(m_density[measure_iter])/dt);
+		//printf("Wilson plaquette: \t %.5f %.5f\n", creal(m_wilson[measure_iter][1]), cimag(m_wilson[measure_iter][1]));
+		printf("Wilson plaquette: \t %.5f\n", mean_plaq());
+
 		measure_iter++;
   	};
 	output_measurement();
@@ -145,16 +152,17 @@ void test()
 	double rA[2];
 
 
-	det2 = hard_inverse(Minv1);
+	//det2 = hard_inverse(Minv1);
 	for(i = 0; i < 60; i++) {
 		//At[i] += 1.8;
 		ranlxd(rA, 2);
-		Ax[i] += rA[0];
-		Ay[i] += rA[1];
+		At[i] += rA[0];
+		//Ax[i] += rA[0];
+		//Ay[i] += rA[1];
 		calculatelinkvars();
 		det1 = det2;
-		det2 = hard_inverse(Minv2);
-		detr = det_ratio_xy(i, Minv1);
+		//det2 = hard_inverse(Minv2);
+		detr = det_ratio_t(i, Minv1);
 		update_inverse(i, Minv1); 
 		printf("%.12f+ I*%.12f, %.12f\n", creal(detr), cimag(detr), cabs(detr));
 		printf("%.12f+ I*%.12f, %.12f\n\n", creal(det2/det1), cimag(det2/det1), cabs(det2/det1));

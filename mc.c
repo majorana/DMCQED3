@@ -21,7 +21,7 @@ void mc_init()
 	emu = exp(-g_mu*dt);
 	up_counter = 0;
 	hard_inverse(Minv);
-	range = 1;
+	range = 2.0;
 }
 
 void propose(const int i)
@@ -136,7 +136,6 @@ void mc_update() //Basic MC update step
     		}
     		else {
       		// reject the change, get the old values for A
-				//At[i] = saveAt; Ut[i] = saveUt;
 			    Ax[i] = saveAx; Ux[i] = saveUx;
 			}
 		}
@@ -178,12 +177,11 @@ void mc_update() //Basic MC update step
     		}
     		else {
       		// reject the change, get the old values for A
-				//At[i] = saveAt; Ut[i] = saveUt;
 				Ay[i] = saveAy; Uy[i] = saveUy;
 			}
 		}
 	}
- 	printf("Acceptance rate per update: %d, %d, %.5f\n", acc, GRIDPOINTS, (double)acc/GRIDPOINTS); 
+ 	printf("Acceptance rate per update: %d, %d, %.5f\n", acc, 3*GRIDPOINTS, (double)acc/(3.0*GRIDPOINTS)); 
  	//Increase the counter of the total number of MC updates...
  	mc_iter++;
 }
