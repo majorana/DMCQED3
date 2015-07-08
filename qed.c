@@ -14,7 +14,7 @@
 /* ***************************************************************************************************************** */
 // global variables 
 
-double g_mu = 1.0;
+double g_mu = 0.0;
 double g_t = 1.0;
 double dt = 8.0/(double)Lt;
 double beta0  = 1;
@@ -141,20 +141,24 @@ void output_measurement()
 void test()
 {
 	int i;
-	complex double detr;
+	complex double detr, det1, det2;
+	double rA[2];
 
-	hard_inverse(Minv1);
-	i = 20;
-	// inverse is stored in Minv
-	At[i] = 3.8;
-	Ax[i] = 2.5;
-	Ay[i] = 1.2;
-	calculatelinkvars();
-	hard_inverse(Minv2);
-	//detr = det_ratio(i, Minv1);
-	quick_update_inverse(i, Minv1, Minv3); // Minv2 is temporary storage
-	//printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
-	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
-	printf("%g\n", matrix_diff(Minv1, Minv2));
+
+	det2 = hard_inverse(Minv1);
+	for(i = 0; i < 60; i++) {
+		//At[i] += 1.8;
+		ranlxd(rA, 2);
+		Ax[i] += rA[0];
+		Ay[i] += rA[1];
+		calculatelinkvars();
+		det1 = det2;
+		det2 = hard_inverse(Minv2);
+		detr = det_ratio_xy(i, Minv1);
+		update_inverse(i, Minv1); 
+		printf("%.12f+ I*%.12f, %.12f\n", creal(detr), cimag(detr), cabs(detr));
+		printf("%.12f+ I*%.12f, %.12f\n\n", creal(det2/det1), cimag(det2/det1), cabs(det2/det1));
+		//printf("%g\n", matrix_diff(Minv1, Minv2));
+	}
 
 }

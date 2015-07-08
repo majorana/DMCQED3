@@ -15,7 +15,6 @@ int mc_iter;
 double range;
 
 complex double Minv[GRIDPOINTS][GRIDPOINTS];
-complex double temp[GRIDPOINTS][GRIDPOINTS];
 
 void mc_init()
 {
@@ -74,14 +73,14 @@ void mc_update() //Basic MC update step
 	
 		S1 = localS(i);
 
-		rdet = det_ratio(i, Minv);
+		rdet = det_ratio_t(i, Minv);
 		//rdet = 1.0;
 		prob = cconj(rdet)*rdet*exp(S0-S1);
 		//printf("%.8f\n", cabs(rdet));
  	 	if(prob >= 1) {
     		R += 1;
 			acc++;
-			update_inverse(i, Minv, temp);
+			update_inverse(i, Minv);
 			//matrix_print(Minv);
   		}
   		else {
@@ -89,7 +88,7 @@ void mc_update() //Basic MC update step
     		if(r[0] < prob) {
       			R += 1;
 				acc++;
-				update_inverse(i, Minv, temp);
+				update_inverse(i, Minv);
 				//matrix_print(Minv);
     		}
     		else {
@@ -117,14 +116,14 @@ void mc_update() //Basic MC update step
 	
 		S1 = localS(i);
 
-		rdet = det_ratio(i, Minv);
+		rdet = det_ratio_xy(i, Minv);
 		//rdet = 1.0;
 		prob = cconj(rdet)*rdet*exp(S0-S1);
 		//printf("%.8f\n", cabs(rdet));
  	 	if(prob >= 1) {
     		R += 1;
 			acc++;
-			update_inverse(i, Minv, temp);
+			update_inverse(i, Minv);
 			//matrix_print(Minv);
   		}
   		else {
@@ -132,7 +131,7 @@ void mc_update() //Basic MC update step
     		if(r[0] < prob) {
       			R += 1;
 				acc++;
-				update_inverse(i, Minv, temp);
+				update_inverse(i, Minv);
 				//matrix_print(Minv);
     		}
     		else {
@@ -159,14 +158,14 @@ void mc_update() //Basic MC update step
 	
 		S1 = localS(i);
 
-		rdet = det_ratio(i, Minv);
+		rdet = det_ratio_xy(i, Minv);
 		//rdet = 1.0;
 		prob = cconj(rdet)*rdet*exp(S0-S1);
 		//printf("%.8f\n", cabs(rdet));
  	 	if(prob >= 1) {
     		R += 1;
 			acc++;
-			update_inverse(i, Minv, temp);
+			update_inverse(i, Minv);
 			//matrix_print(Minv);
   		}
   		else {
@@ -174,7 +173,7 @@ void mc_update() //Basic MC update step
     		if(r[0] < prob) {
       			R += 1;
 				acc++;
-				update_inverse(i, Minv, temp);
+				update_inverse(i, Minv);
 				//matrix_print(Minv);
     		}
     		else {

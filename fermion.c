@@ -14,7 +14,11 @@
 complex double fdet[GRIDPOINTS][GRIDPOINTS];
 complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
-complex double Minv3[GRIDPOINTS][GRIDPOINTS];
+//complex double Minv3[GRIDPOINTS][GRIDPOINTS];
+
+complex double temp1[GRIDPOINTS][GRIDPOINTS];
+complex double temp2[GRIDPOINTS][GRIDPOINTS];
+
 
 int up_counter;
 int g_inverse = REINVERSE; //Number of quick inverse updates between hard-core inverse
@@ -55,7 +59,7 @@ complex double prod_row_col(const int i, const int j, fmat A)
 {
 	//int k;
 	//complex double r = 0.0;
-	return -emu*Ut[i]*A[tp[i]][j] + (1.0)*A[i][j] + dt*Ut[tp[i]]*(Ux[tp[i]]*A[tp[xp[i]]][j] + Uy[tp[i]]*A[tp[yp[i]]][j] + cconj(Ux[tp[xm[i]]])*A[tp[xm[i]]][j] + cconj(Uy[tp[ym[i]]])*A[tp[ym[i]]][j]);
+	return -emu*Ut[i]*A[tp[i]][j] + (1.0)*A[i][j] + dt*Ut[i]*(Ux[tp[i]]*A[tp[xp[i]]][j] + Uy[tp[i]]*A[tp[yp[i]]][j] + cconj(Ux[tp[xm[i]]])*A[tp[xm[i]]][j] + cconj(Uy[tp[ym[i]]])*A[tp[ym[i]]][j]);
 	//for(k = 0;k<GRIDPOINTS;k++)
 	//	r += fdet[i][k]*A[k][j];
 	//return r;
@@ -73,10 +77,50 @@ complex double prod_col_row(const int i, const int j, fmat A)
 
 complex double prod_row_vec(const int i, complex double *v)
 {
-	return -emu*Ut[i]*v[tp[i]] + (1.0)*v[i] + dt*Ut[tp[i]]*(Ux[tp[i]]*v[tp[xp[i]]] + Uy[tp[i]]*v[tp[yp[i]]] + cconj(Ux[tp[xm[i]]])*v[tp[xm[i]]] + cconj(Uy[tp[ym[i]]])*v[tp[ym[i]]]);
+	return -emu*Ut[i]*v[tp[i]] + (1.0)*v[i] + dt*Ut[i]*(Ux[tp[i]]*v[tp[xp[i]]] + Uy[tp[i]]*v[tp[yp[i]]] + cconj(Ux[tp[xm[i]]])*v[tp[xm[i]]] + cconj(Uy[tp[ym[i]]])*v[tp[ym[i]]]);
 }
 
-complex double det_ratio(const int i, fmat A) {
+complex double det_ratio_t(const int i, fmat A) {
+	// det M'/det M, update row i
+	return prod_row_col(i, i, A);
+}
+
+complex double det_ratio_xy(const int i, fmat A) {
+	int j, l, k;
+	complex double rdet1, rdet2, rdet3, x, y;
+	complex double colx[GRIDPOINTS], coly[GRIDPOINTS];
+	
+	// det M'/det M, update row tm[i]
+	rdet1 = prod_row_col(tm[i], tm[i], A);
+	// calculate the j=tm[xp[i]] row of the inv of M'
+	j = tm[xp[i]];
+	x = prod_row_col(tm[i], j, A);
+	// need to find the j-th column of the inverse of M' 
+	for(k = 0; k < GRIDPOINTS; k++) 
+		colx[k] = A[k][j] - x/rdet1*A[k][tm[i]];
+	
+	l = tm[yp[i]];
+	y = prod_row_col(tm[i], l, A);
+	for(k = 0; k < GRIDPOINTS; k++) 
+		coly[k] = A[k][l] - y/rdet1*A[k][tm[i]];
+
+
+	// calculate det M''/ det M'
+	rdet2 = prod_row_vec(j, colx);
+	
+	y = prod_row_vec(j, coly);
+	for(k = 0; k < GRIDPOINTS; k++) 
+		coly[k] = coly[k] - y/rdet2*colx[k];
+
+	// calculate det M'''/det M''
+	rdet3 = prod_row_vec(l, coly);
+
+	return rdet1*rdet2*rdet3;
+}
+
+
+
+complex double det_ratio_old(const int i, fmat A) {
 	int j, l, k;
 	complex double rdet1, rdet2, rdet3, x, y;
 	complex double colx[GRIDPOINTS], coly[GRIDPOINTS];
@@ -161,46 +205,49 @@ void update_col(const int i, fmat out, fmat in) {
 }
 
 // quick update the inverse after Ax, Ay at site i are modified
-void quick_update_inverse(const int i, fmat in, fmat temp)
+void quick_update_inverse(const int i, fmat in, fmat temp1, fmat temp2)
 {
-	update_row(tm[i], temp, in);
-	update_col(i, in, temp);
+	update_row(i, temp1, in);
+	update_row(tm[i], temp2, temp1);
+	update_col(i, in, temp2);
 }
 
 
-void hard_inverse(fmat M)
+complex double hard_inverse(fmat M)
 {
 	int i, j;
+	complex double r;
 	
 	for(i = 0; i<GRIDPOINTS;i++)
 	{
 		set_zero(M[i]);
 		M[i][tp[i]] = -emu*Ut[i];
 		M[i][i] = 1.0;
-		M[i][tp[xp[i]]] = dt*Ut[tp[i]]*Ux[tp[i]];
-		M[i][tp[xm[i]]] = dt*Ut[tp[i]]*cconj(Ux[tp[xm[i]]]);
-		M[i][tp[yp[i]]] = dt*Ut[tp[i]]*Uy[tp[i]];
-		M[i][tp[ym[i]]] = dt*Ut[tp[i]]*cconj(Uy[tp[ym[i]]]);
+		M[i][tp[xp[i]]] = dt*Ut[i]*Ux[tp[i]];
+		M[i][tp[xm[i]]] = dt*Ut[i]*cconj(Ux[tp[xm[i]]]);
+		M[i][tp[yp[i]]] = dt*Ut[i]*Uy[tp[i]];
+		M[i][tp[ym[i]]] = dt*Ut[i]*cconj(Uy[tp[ym[i]]]);
 	}
 
 	for(i = 0;i<GRIDPOINTS;i++)
 		for(j = 0;j < GRIDPOINTS;j++)
 			fdet[i][j] = M[i][j];
 
-	//r = matrix_det(*fdet);
+	r = matrix_det(*fdet);
 
 	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
 
 	matrix_inverse(*M);
 	//matrix_print(M);
+	return r;
 }
 
-void update_inverse(int i, fmat M, fmat temp)
+void update_inverse(int i, fmat M)
 {
 	if (up_counter < g_inverse) 
 	{
 		up_counter++;
-		quick_update_inverse(i, M, temp);
+		quick_update_inverse(i, M, temp1, temp2);
 	}
 	else 
 	{

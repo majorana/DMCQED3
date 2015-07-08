@@ -8,7 +8,7 @@
 
 #include "linalg.h"
 
-#define REINVERSE 40
+#define REINVERSE 30
 
 typedef complex double (*fmat)[GRIDPOINTS];
 
@@ -16,12 +16,14 @@ extern double emu;
 
 void fermion(complex double *out, complex double *in);
 
-complex double det_ratio(const int i, fmat A); 
+complex double det_ratio_t(const int i, fmat A); 
+complex double det_ratio_xy(const int i, fmat A); 
+
 void update_row(const int i, fmat out, fmat in);
 void update_col(const int i, fmat out, fmat in);
-void quick_update_inverse(int i, fmat in, fmat temp);
-void hard_inverse(fmat M);
-void update_inverse(int i, fmat M, fmat temp);
+//void quick_update_inverse(int i, fmat in, fmat temp);
+complex double hard_inverse(fmat M);
+void update_inverse(int i, fmat M);
 
 extern int up_counter;
 
