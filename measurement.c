@@ -62,13 +62,13 @@ complex double wilson_loop1(int nx, int nt)
 		}
 		// going from j+nx*ex+nt*et back to j+nt*et
 		for(kx = 0; kx < nx; kx++) {
-			w *= cconj(Ux[j]);
 			j = xm[j];
+			w *= cconj(Ux[j]);
 		}
 		// going from j+nt*et back to j
 		for(kt = 0; kt < nt; kt++) {
-			w *= cconj(Ut[j]);
 			j = tm[j];
+			w *= cconj(Ut[j]);
 		}
 		avgw += w;
 	}
