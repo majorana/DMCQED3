@@ -14,10 +14,12 @@
 complex double fdet[GRIDPOINTS][GRIDPOINTS];
 complex double Minv1[GRIDPOINTS][GRIDPOINTS];
 complex double Minv2[GRIDPOINTS][GRIDPOINTS];
-//complex double Minv3[GRIDPOINTS][GRIDPOINTS];
+complex double Minv3[GRIDPOINTS][GRIDPOINTS];
 
 int up_counter;
 int g_inverse = REINVERSE; //Number of quick inverse updates between hard-core inverse
+
+double emu;
 
 double matrix_diff(fmat A1, fmat A2) 
 {
@@ -51,17 +53,27 @@ void matrix_print(fmat A)
 
 complex double prod_row_col(const int i, const int j, fmat A) 
 {
-	return exp(-g_mu)*Ut[i]*A[tp[i]][j] - (1.0)*A[i][j] - dt*g_t*(Ux[i]*A[xp[i]][j] + Uy[i]*A[yp[i]][j] + cconj(Ux[xm[i]])*A[xm[i]][j] + cconj(Uy[ym[i]])*A[ym[i]][j]);
+	//int k;
+	//complex double r = 0.0;
+	return -emu*Ut[i]*A[tp[i]][j] + (1.0)*A[i][j] + dt*Ut[tp[i]]*(Ux[tp[i]]*A[tp[xp[i]]][j] + Uy[tp[i]]*A[tp[yp[i]]][j] + cconj(Ux[tp[xm[i]]])*A[tp[xm[i]]][j] + cconj(Uy[tp[ym[i]]])*A[tp[ym[i]]][j]);
+	//for(k = 0;k<GRIDPOINTS;k++)
+	//	r += fdet[i][k]*A[k][j];
+	//return r;
 }
 
 complex double prod_col_row(const int i, const int j, fmat A) 
 {
-	return exp(-g_mu)*Ut[tm[i]]*A[j][tm[i]] - (1.0)*A[j][i] - dt*g_t*(Ux[xm[i]]*A[j][xm[i]] + Uy[ym[i]]*A[j][ym[i]] + cconj(Ux[i])*A[j][xp[i]] + cconj(Uy[i])*A[j][yp[i]]);
+	//int k;
+	//complex double r = 0.0;
+	//for(k = 0;k<GRIDPOINTS;k++)
+	//	r += fdet[k][i]*A[j][k];
+	//return r;
+	return -emu*Ut[tm[i]]*A[j][tm[i]] + (1.0)*A[j][i] + dt*(Ut[tm[xm[i]]]*Ux[xm[i]]*A[j][tm[xm[i]]] + Ut[tm[ym[i]]]*Uy[ym[i]]*A[j][tm[ym[i]]] + Ut[tm[xp[i]]]*cconj(Ux[i])*A[j][tm[xp[i]]] + Ut[tm[yp[i]]]*cconj(Uy[i])*A[j][tm[yp[i]]]);
 }
 
 complex double prod_row_vec(const int i, complex double *v)
 {
-	return exp(-g_mu)*Ut[i]*v[tp[i]] - (1.0)*v[i] - dt*g_t*(Ux[i]*v[xp[i]] + Uy[i]*v[yp[i]] + cconj(Ux[xm[i]])*v[xm[i]] + cconj(Uy[ym[i]])*v[ym[i]]);
+	return -emu*Ut[i]*v[tp[i]] + (1.0)*v[i] + dt*Ut[tp[i]]*(Ux[tp[i]]*v[tp[xp[i]]] + Uy[tp[i]]*v[tp[yp[i]]] + cconj(Ux[tp[xm[i]]])*v[tp[xm[i]]] + cconj(Uy[tp[ym[i]]])*v[tp[ym[i]]]);
 }
 
 complex double det_ratio(const int i, fmat A) {
@@ -148,10 +160,10 @@ void update_col(const int i, fmat out, fmat in) {
 	}
 }
 
-// quick update the inverse after At, Ax, Ay at site i are modified
+// quick update the inverse after Ax, Ay at site i are modified
 void quick_update_inverse(const int i, fmat in, fmat temp)
 {
-	update_row(i, temp, in);
+	update_row(tm[i], temp, in);
 	update_col(i, in, temp);
 }
 
@@ -162,19 +174,19 @@ void hard_inverse(fmat M)
 	
 	for(i = 0; i<GRIDPOINTS;i++)
 	{
-		set_zero(fdet[i]);
-		fdet[i][tp[i]] = Ut[i];
-		fdet[i][i] = -1.0-g_mu;
-		fdet[i][xp[i]] = -g_t*Ux[i];
-		fdet[i][xm[i]] = -g_t*cconj(Ux[xm[i]]);
-		fdet[i][yp[i]] = -g_t*Uy[i];
-		fdet[i][ym[i]] = -g_t*cconj(Uy[ym[i]]);
+		set_zero(M[i]);
+		M[i][tp[i]] = -emu*Ut[i];
+		M[i][i] = 1.0;
+		M[i][tp[xp[i]]] = dt*Ut[tp[i]]*Ux[tp[i]];
+		M[i][tp[xm[i]]] = dt*Ut[tp[i]]*cconj(Ux[tp[xm[i]]]);
+		M[i][tp[yp[i]]] = dt*Ut[tp[i]]*Uy[tp[i]];
+		M[i][tp[ym[i]]] = dt*Ut[tp[i]]*cconj(Uy[tp[ym[i]]]);
 	}
 
-	for(i = 0; i<GRIDPOINTS;i++) 
-		for(j = 0; j<GRIDPOINTS; j++) 
-			M[i][j] =  fdet[i][j];
-	
+	for(i = 0;i<GRIDPOINTS;i++)
+		for(j = 0;j < GRIDPOINTS;j++)
+			fdet[i][j] = M[i][j];
+
 	//r = matrix_det(*fdet);
 
 	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
@@ -195,17 +207,6 @@ void update_inverse(int i, fmat M, fmat temp)
 		up_counter = 0; //reset the counter
 		hard_inverse(M);
 	}
-}
-
-void fermion(complex double *out, complex double *in) 
-{
-	int i;
-  	for(i=0; i<GRIDPOINTS; i++) 
-	{
-		out[i] = exp(-g_mu)*Ut[i]*in[tp[i]] - in[i] 
-			- g_t*(Ux[i]*in[xp[i]] + cconj(Ux[xm[i]])*in[xm[i]] + Uy[i]*in[yp[i]] + cconj(Uy[ym[i]])*in[ym[i]]);
-	}
-	return;
 }
 
 

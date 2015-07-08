@@ -64,7 +64,8 @@ void hotstart()
  	ranlxd(r, GRIDPOINTS*3);
  	for(i=0; i<GRIDPOINTS; i++)
  	{
-  		At[i]=2*M_PI*r[i]-M_PI;
+  		//At[i]=2*M_PI*r[i]-M_PI;
+		At[i] = 0.0;
   		Ax[i]=2*M_PI*r[i+GRIDPOINTS]-M_PI;
 		Ay[i]=2*M_PI*r[i+2*GRIDPOINTS]-M_PI;
  	}

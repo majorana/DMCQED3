@@ -32,6 +32,8 @@ void echo_sim_params();
 
 void output_measurement();
 
+void test();
+
 int main(int argc, char **argv) 
 {
 	int i, l;
@@ -46,6 +48,9 @@ int main(int argc, char **argv)
   	hotstart();
   	/* Print out the run parameters */
   	echo_sim_params();
+	
+	test();
+	return 0;
 
 	mc_init();
   	/* thermalization */
@@ -143,13 +148,13 @@ void test()
 	// inverse is stored in Minv
 	At[i] = 3.8;
 	Ax[i] = 2.5;
-	Ay[i] = 0.0;
+	Ay[i] = 1.2;
 	calculatelinkvars();
-	detr = det_ratio(i, Minv1);
-	quick_update_inverse(i, Minv1, Minv2); // Minv2 is temporary storage
-	printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
 	hard_inverse(Minv2);
+	//detr = det_ratio(i, Minv1);
+	quick_update_inverse(i, Minv1, Minv3); // Minv2 is temporary storage
+	//printf("%.12f+ I*%.12f\n", creal(detr), cimag(detr));
 	//printf("%.12f+ I*%.12f\n", creal(det2/det1), cimag(det2/det1));
-	printf("%.12f\n", matrix_diff(Minv1, Minv2));
+	printf("%g\n", matrix_diff(Minv1, Minv2));
 
 }

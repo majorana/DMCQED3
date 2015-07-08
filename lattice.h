@@ -7,7 +7,7 @@
 
 #define Lx (6)                                       
 #define Ly (6)                                      
-#define Lt (20)
+#define Lt (6)
 #define GRIDPOINTS (Lx*Ly*Lt)                           //Total number of lattice sites
 
 extern int xp[GRIDPOINTS];

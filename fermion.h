@@ -12,6 +12,8 @@
 
 typedef complex double (*fmat)[GRIDPOINTS];
 
+extern double emu;
+
 void fermion(complex double *out, complex double *in);
 
 complex double det_ratio(const int i, fmat A); 
