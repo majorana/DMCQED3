@@ -45,7 +45,7 @@ int main(int argc, char **argv)
   	/* Initialize the lattice geometry */
   	init_lattice(Lx, Ly, Lt);
   	/* Initialize the fields */
-  	coldstart();
+  	hotstart();
   	/* Print out the run parameters */
   	echo_sim_params();
 	
@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 	measurement_init();
  	density(Minv);
 	wilson_loop(1);
-	printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter])/dt, cimag(m_density[measure_iter])/dt);
+	printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
 	printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 
   	for(i=0; i<g_measurements; i++) 
@@ -85,8 +85,8 @@ int main(int argc, char **argv)
   		density(Minv);
 		density_correlation(Minv);
 		wilson_loop(4);
-		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter])/dt, cimag(m_density[measure_iter])/dt);
-		printf("Wilson plaquette: \t %.5f %.5f\n", creal(m_wilson[measure_iter][2]), cimag(m_wilson[measure_iter][2]));
+		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
+		//printf("Wilson plaquette: \t %.5f %.5f\n", creal(m_wilson[measure_iter][1]), cimag(m_wilson[measure_iter][1]));
 		printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 
 		measure_iter++;

@@ -238,8 +238,6 @@ void hard_inverse(fmat M)
 	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
 
 	info = matrix_inverse(*M);
-	//printf("%d\n", info);
-	//matrix_print(M);
 	//return r;
 }
 

@@ -42,5 +42,5 @@ qed: fields.o qed.o mc.o lattice.o linalg.o  ranlxd.o gauss.o fermion.o measurem
 	$(LINKER) qed.o fields.o mc.o lattice.o linalg.o ranlxd.o gauss.o fermion.o measurement.o -o qed -lm
 
 clean:
-	rm -f *.o qed test1 test2
+	rm -f *.o qed 
 

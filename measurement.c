@@ -105,7 +105,7 @@ void density(fmat G)
 			avg += m_density_profile[measure_iter][s];
 		}
 	}
-	m_density[measure_iter] = avg/(Lx*Ly);
+	m_density[measure_iter] = avg/(Lx*Ly*dt);
 	//printf("Average density: \t %.4f+I*%.4f\n", creal(avg/(Lx*Ly)), cimag(avg/(Lx*Ly)));
 }
 

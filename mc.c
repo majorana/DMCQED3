@@ -21,30 +21,7 @@ void mc_init()
 	emu = exp(-g_mu*dt);
 	up_counter = 0;
 	hard_inverse(Minv);
-	range = 2.0;
-}
-
-void propose(const int i)
-{
-	double rA[3];
-	double phi;
-	ranlxd(rA,3);
-	/*At[i] = 2*M_PI*rA[0];
-	Ut[i] = cos(At[i]) + I*sin(At[i]);
-	Ax[i] = 2*M_PI*rA[1];
-	Ux[i] = cos(Ax[i]) + I*sin(Ax[i]);
-	Ay[i] = 2*M_PI*rA[2];
-	Uy[i] = cos(Ay[i]) + I*sin(Ay[i]);
-	*/
-	phi = range*(2.0*rA[0] - 1.0);
-	Ut[i] *= (1.0+I*phi)/sqrt(1.0+phi*phi);
-	At[i] += atan(phi);
-	phi = range*(2.0*rA[1] - 1.0);
-	Ux[i] *= (1.0+I*phi)/sqrt(1.0+phi*phi);
-	Ax[i] += atan(phi);
-	phi = range*(2.0*rA[2] - 1.0);
-	Uy[i] *= (1.0+I*phi)/sqrt(1.0+phi*phi);
-	Ay[i] += atan(phi); 
+	range = 3.0;
 }
 
 void mc_update() //Basic MC update step
@@ -59,8 +36,6 @@ void mc_update() //Basic MC update step
 	{
 		// propose a change
 		saveAt = At[i]; saveUt = Ut[i];
-		//saveAx = Ax[i]; saveUx = Ux[i];
-		//saveAy = Ay[i]; saveUy = Uy[i];
 
 		S0 = localS(i);
 		
@@ -69,7 +44,6 @@ void mc_update() //Basic MC update step
 		Ut[i] *= (1.0+I*phi)/sqrt(1.0+phi*phi);
 		At[i] += atan(phi);
 
-		//propose(i);
 	
 		S1 = localS(i);
 

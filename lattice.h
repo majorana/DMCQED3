@@ -5,8 +5,8 @@
 /***** This unit defines lattice geometry  *****/
 /***********************************************/    
 
-#define Lx (6)                                       
-#define Ly (6)                                      
+#define Lx (7)                                       
+#define Ly (7)                                      
 #define Lt (10)
 #define GRIDPOINTS (Lx*Ly*Lt)                           //Total number of lattice sites
 

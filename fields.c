@@ -15,12 +15,12 @@ complex double Ut[GRIDPOINTS], Ux[GRIDPOINTS], Uy[GRIDPOINTS];   //Compact latti
 
 double S_Gtx(int i)
 {
-	return -beta0*cos(At[i] + Ax[tp[i]] - At[xp[i]] - Ax[i]);
+	return -beta0/dt*cos(At[i] + Ax[tp[i]] - At[xp[i]] - Ax[i]);
 }
 
 double S_Gty(int i)
 {
-	return -beta0*cos(At[i] + Ay[tp[i]] - At[yp[i]] - Ay[i]);
+	return -beta0/dt*cos(At[i] + Ay[tp[i]] - At[yp[i]] - Ay[i]);
 }
 
 double S_Gxy(int i)
