@@ -81,7 +81,7 @@ complex double prod_col_row(const int i, const int j, fmat A)
 	//for(k = 0;k<GRIDPOINTS;k++)
 	//	r += fdet[k][i]*A[j][k];
 	//return r;
-	return -emu*Ut[tm[i]]*apb(i)*A[j][tm[i]] + (1.0)*A[j][i] + dt*apb(i)*(Ut[tm[xm[i]]]*Ux[xm[i]]*A[j][tm[xm[i]]] + Ut[tm[ym[i]]]*Uy[ym[i]]*A[j][tm[ym[i]]] + Ut[tm[xp[i]]]*cconj(Ux[i])*A[j][tm[xp[i]]] + Ut[tm[yp[i]]]*cconj(Uy[i])*A[j][tm[yp[i]]]);
+	return -emu*Ut[tm[i]]*apb(tm[i])*A[j][tm[i]] + (1.0)*A[j][i] + dt*apb(i)*(Ut[tm[xm[i]]]*Ux[xm[i]]*A[j][tm[xm[i]]] + Ut[tm[ym[i]]]*Uy[ym[i]]*A[j][tm[ym[i]]] + Ut[tm[xp[i]]]*cconj(Ux[i])*A[j][tm[xp[i]]] + Ut[tm[yp[i]]]*cconj(Uy[i])*A[j][tm[yp[i]]]);
 }
 
 complex double prod_row_vec(const int i, complex double *v)
