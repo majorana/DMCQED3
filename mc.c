@@ -156,6 +156,7 @@ void mc_update() //Basic MC update step
 		}
 	}
  	printf("Acceptance rate per update: %d, %d, %.5f\n", acc, 3*GRIDPOINTS, (double)acc/(3.0*GRIDPOINTS)); 
+	fflush(stdout);
  	//Increase the counter of the total number of MC updates...
  	mc_iter++;
 }

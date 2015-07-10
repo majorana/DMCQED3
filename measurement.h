@@ -12,7 +12,7 @@
  * Fermion density, density-density correlation function
  * More general four point correlation functions: T_{ij}=c_i^\dag U_{ij} c_j, <T_{ij}T^\dag_{kl}>
  * 2k_F Friedel oscillations?
- * Pair correlation function c_{i,up}c_{i,down} is a gauge-invariant quantity because up and down have opposite charges. 
+ * Pair correlation function c_{i,up}c_{i,down} is a gauge-invariant quantity because up and down have opposite charges. <c_{i up}^\dag c_{i down}^\dag c_{j down} c_{j up}>=<c_{i up}^\dag c_{j up}><c_{i down}^\dag c_{j down}> = |<c_{i up}^\dag c_{j up}>|^2
  */
 
 extern int g_measurements;

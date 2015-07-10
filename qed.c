@@ -14,15 +14,15 @@
 /* ***************************************************************************************************************** */
 // global variables 
 
-double g_mu = 1.5;
+double g_mu = 0.5;
 double g_t = 1.0;
 double dt = 8.0/(double)Lt;
 double beta0  = 1.0;
 double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
 int g_thermalize   = 0;   //Number of MC updates for thermalization; probably ~ 1000 or even more is needed
-int g_measurements = 200;    //Number of measurements (statistically independent configurations)
-int g_intermediate =  1;    //Number of MC updates between the measurements
+int g_measurements = 500;    //Number of measurements (statistically independent configurations)
+int g_intermediate =  5;    //Number of MC updates between the measurements
 
 /* ***************************************************************************************************************** */
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
   	/* Initialize the lattice geometry */
   	init_lattice(Lx, Ly, Lt);
   	/* Initialize the fields */
-  	hotstart();
+  	coldstart();
   	/* Print out the run parameters */
   	echo_sim_params();
 	
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
 		//printf("Wilson plaquette: \t %.5f %.5f\n", creal(m_wilson[measure_iter][1]), cimag(m_wilson[measure_iter][1]));
 		printf("Wilson plaquette: \t %.5f\n", mean_plaq());
-
+		fflush(stdout);
 		measure_iter++;
   	};
 	output_measurement();
@@ -114,6 +114,7 @@ void echo_sim_params()
  	printf("\t Number of measurements:          %i\n",      g_measurements);
  	printf("\t MC updates between measurements: %i\n",      g_intermediate);
 	printf("\n\n");
+	fflush(stdout);
 }
 
 void output_measurement()
