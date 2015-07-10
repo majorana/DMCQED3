@@ -117,8 +117,9 @@ double mean_plaq()
 	{
 		mp += S_Gtx(i);
 	}
-	return mp/GRIDPOINTS;
+	return -dt*mp/(beta0*GRIDPOINTS);
 }
+
 // <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i>. The second term is the connected component 
 // calculate 1/N\sum_x n(x) n(x+y), also average over time
 void density_correlation(fmat G)

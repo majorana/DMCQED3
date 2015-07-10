@@ -55,11 +55,20 @@ void matrix_print(fmat A)
 	return;
 }
 
+complex double apb(const int i)
+// matrix element <i|M|i+dtau>
+{
+	if (i == Lt - 1)
+		return -1.0;
+	else
+		return 1.0;
+}
+
 complex double prod_row_col(const int i, const int j, fmat A) 
 {
 	//int k;
 	//complex double r = 0.0;
-	return -emu*Ut[i]*A[tp[i]][j] + (1.0)*A[i][j] + dt*Ut[i]*(Ux[tp[i]]*A[tp[xp[i]]][j] + Uy[tp[i]]*A[tp[yp[i]]][j] + cconj(Ux[tp[xm[i]]])*A[tp[xm[i]]][j] + cconj(Uy[tp[ym[i]]])*A[tp[ym[i]]][j]);
+	return -emu*apb(i)*Ut[i]*A[tp[i]][j] + (1.0)*A[i][j] + dt*Ut[i]*apb(i)*(Ux[tp[i]]*A[tp[xp[i]]][j] + Uy[tp[i]]*A[tp[yp[i]]][j] + cconj(Ux[tp[xm[i]]])*A[tp[xm[i]]][j] + cconj(Uy[tp[ym[i]]])*A[tp[ym[i]]][j]);
 	//for(k = 0;k<GRIDPOINTS;k++)
 	//	r += fdet[i][k]*A[k][j];
 	//return r;
@@ -72,12 +81,12 @@ complex double prod_col_row(const int i, const int j, fmat A)
 	//for(k = 0;k<GRIDPOINTS;k++)
 	//	r += fdet[k][i]*A[j][k];
 	//return r;
-	return -emu*Ut[tm[i]]*A[j][tm[i]] + (1.0)*A[j][i] + dt*(Ut[tm[xm[i]]]*Ux[xm[i]]*A[j][tm[xm[i]]] + Ut[tm[ym[i]]]*Uy[ym[i]]*A[j][tm[ym[i]]] + Ut[tm[xp[i]]]*cconj(Ux[i])*A[j][tm[xp[i]]] + Ut[tm[yp[i]]]*cconj(Uy[i])*A[j][tm[yp[i]]]);
+	return -emu*Ut[tm[i]]*apb(i)*A[j][tm[i]] + (1.0)*A[j][i] + dt*apb(i)*(Ut[tm[xm[i]]]*Ux[xm[i]]*A[j][tm[xm[i]]] + Ut[tm[ym[i]]]*Uy[ym[i]]*A[j][tm[ym[i]]] + Ut[tm[xp[i]]]*cconj(Ux[i])*A[j][tm[xp[i]]] + Ut[tm[yp[i]]]*cconj(Uy[i])*A[j][tm[yp[i]]]);
 }
 
 complex double prod_row_vec(const int i, complex double *v)
 {
-	return -emu*Ut[i]*v[tp[i]] + (1.0)*v[i] + dt*Ut[i]*(Ux[tp[i]]*v[tp[xp[i]]] + Uy[tp[i]]*v[tp[yp[i]]] + cconj(Ux[tp[xm[i]]])*v[tp[xm[i]]] + cconj(Uy[tp[ym[i]]])*v[tp[ym[i]]]);
+	return -emu*apb(i)*Ut[i]*v[tp[i]] + (1.0)*v[i] + dt*Ut[i]*apb(i)*(Ux[tp[i]]*v[tp[xp[i]]] + Uy[tp[i]]*v[tp[yp[i]]] + cconj(Ux[tp[xm[i]]])*v[tp[xm[i]]] + cconj(Uy[tp[ym[i]]])*v[tp[ym[i]]]);
 }
 
 complex double det_ratio_t(const int i, fmat A) {
@@ -217,16 +226,18 @@ void hard_inverse(fmat M)
 {
 	int i, j, info;
 	complex double r;
+	complex double s;
 	
 	for(i = 0; i<GRIDPOINTS;i++)
 	{
 		set_zero(M[i]);
-		M[i][tp[i]] = -emu*Ut[i];
+		s = apb(i);
+		M[i][tp[i]] = -emu*s*Ut[i];
 		M[i][i] = 1.0;
-		M[i][tp[xp[i]]] = dt*Ut[i]*Ux[tp[i]];
-		M[i][tp[xm[i]]] = dt*Ut[i]*cconj(Ux[tp[xm[i]]]);
-		M[i][tp[yp[i]]] = dt*Ut[i]*Uy[tp[i]];
-		M[i][tp[ym[i]]] = dt*Ut[i]*cconj(Uy[tp[ym[i]]]);
+		M[i][tp[xp[i]]] = dt*Ut[i]*s*Ux[tp[i]];
+		M[i][tp[xm[i]]] = dt*Ut[i]*s*cconj(Ux[tp[xm[i]]]);
+		M[i][tp[yp[i]]] = dt*Ut[i]*s*Uy[tp[i]];
+		M[i][tp[ym[i]]] = dt*Ut[i]*s*cconj(Uy[tp[ym[i]]]);
 	}
 
 	//for(i = 0;i<GRIDPOINTS;i++)
@@ -238,6 +249,7 @@ void hard_inverse(fmat M)
 	//printf("Det: %.12f + I* %.12f\n", creal(r), cimag(r));
 
 	info = matrix_inverse(*M);
+	//matrix_print(M);
 	//return r;
 }
 

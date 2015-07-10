@@ -106,6 +106,7 @@ void echo_sim_params()
 {
  	printf("\n Quantum Monte-Carlo for U(1) gauge theory with spinor Fermi surface\n\n");
  	printf("Run parameters:\n");
+	printf("\t Chemical potential:              %2.4lf\n",   g_mu);
  	printf("\t Beta0:                            %2.4lf\n",  beta0);
 	printf("\t Beta:                            %2.4lf\n",  beta);
  	printf("\t Lattice size:                    %i x %i x %i\n", Lx, Ly, Lt);
