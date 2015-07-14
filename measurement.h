@@ -21,12 +21,13 @@ extern int measure_iter;
 extern complex double (*m_density);
 extern complex double (*m_density_corr)[Lx][Ly];
 extern complex double (*m_wilson)[Lx/2];
-
+extern complex double (*m_wilson_xy)[Lx/2][Ly/2];
 
 void measurement_init();
 void measurement_finish();
 
 void wilson_loop(int nt);
+void wilson_loop_space();
 void density(fmat G);
 void density_correlation(fmat G);
 double mean_plaq();

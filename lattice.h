@@ -22,6 +22,6 @@ int init_lattice();      //This procedure initializes the above arrays
 
 int idx(int it, int ix, int iy);
 
-void coordiate(int i, int *it, int *ix, int *iy);
+void coordinate(int i, int *it, int *ix, int *iy);
 
 #endif

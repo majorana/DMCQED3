@@ -59,7 +59,7 @@ complex double apb(const int i)
 // matrix element <i|M|i+dtau>
 {
 	int it, ix, iy;
-	coordiate(i, &it, &ix, &iy);
+	coordinate(i, &it, &ix, &iy);
 	if (it == Lt - 1)
 		return -1.0;
 	else

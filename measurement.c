@@ -10,6 +10,7 @@ complex double (*m_density);
 complex double (*m_density_corr)[Lx][Ly];
 complex double (*m_polyakov)[Lx*Ly];
 complex double (*m_wilson)[Lx/2];
+complex double (*m_wilson_xy)[Lx/2][Ly/2];
 
 void measurement_init()
 {
@@ -18,6 +19,7 @@ void measurement_init()
 	m_density = malloc(g_measurements*sizeof(complex double));
 	m_density_corr = malloc(g_measurements*Lx*Ly*sizeof(complex double));
 	m_wilson = malloc(g_measurements*(Lx/2)*sizeof(complex double));
+	m_wilson_xy = malloc(g_measurements*(Lx/2)*(Ly/2)*sizeof(complex double));
 }
 
 void measurement_finish()
@@ -26,6 +28,7 @@ void measurement_finish()
 	free(m_density);
 	free(m_density_corr);
 	free(m_wilson);
+	free(m_wilson_xy);
 }
 
 complex double polyakov_loop(int x, int y)
@@ -37,6 +40,45 @@ complex double polyakov_loop(int x, int y)
 	for(i = 0; i<Lt; i++)
 		Px *= Ut[idx(i, x, y)];
 	return Px;
+}
+
+
+complex double wilson_loop_space1(int nx, int ny)
+{
+	// nx: spatial extension, say x direction
+	// nt: time extension
+	int i, j, kx, ky;
+	complex double w, avgw;
+	avgw = 0.0 + 0.0*I;
+	for(i = 0; i < GRIDPOINTS; i++)
+	{
+		j = i;
+		w = 1.0 + 0.0*I;
+		// going from j to j+ nx*e_x
+		for(kx = 0; kx < nx; kx++) {
+			w *= Ux[j];
+			j = xp[j];
+		}
+		// going from j+nx*e_x to j+nx*ex+ny*ey
+		for(ky = 0; ky < ny; ky++) {
+			w *= Uy[j];
+			j = yp[j];
+		}
+		// going from j+nx*ex+ny*ey back to j+ny*ey
+		for(kx = 0; kx < nx; kx++) {
+			j = xm[j];
+			w *= cconj(Ux[j]);
+		}
+		// going from j+nt*et back to j
+		for(ky = 0; ky < ny; ky++) {
+			j = ym[j];
+			w *= cconj(Uy[j]);
+		}
+		avgw += w;
+	}
+	avgw /= GRIDPOINTS;
+	//printf("Wilson loop: \t %.4f+I*%.4f\n", creal(avgw), cimag(avgw));
+	return avgw;
 }
 
 complex double wilson_loop1(int nx, int nt)
@@ -77,6 +119,7 @@ complex double wilson_loop1(int nx, int nt)
 	return avgw;
 }
 
+// Wilson loop in the t-x plane
 void wilson_loop(int nt) 
 {
 	int i;
@@ -84,6 +127,15 @@ void wilson_loop(int nt)
 	{
 		m_wilson[measure_iter][i] = wilson_loop1(i, nt);
 	}
+}
+
+// Wilson loop in the x-y plane
+void wilson_loop_space() 
+{
+	int i, j;
+	for (i = 0; i<Lx/2; i++)
+		for (j = 0; j<Ly/2; j++)
+			m_wilson_xy[measure_iter][i][j] = wilson_loop_space1(i, j);
 }
 
 void density(fmat G)
@@ -115,9 +167,9 @@ double mean_plaq()
 	double mp = 0.0;
 	for (i = 0; i < GRIDPOINTS; i++) 
 	{
-		mp += S_Gtx(i);
+		mp += S_Gxy(i);
 	}
-	return -dt*mp/(beta0*GRIDPOINTS);
+	return -mp/(beta*dt*GRIDPOINTS);
 }
 
 // <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i>. The second term is the connected component 
@@ -135,7 +187,7 @@ void density_correlation(fmat G)
 			c = 0.0 + 0.0*I;
 			for(i = 0; i<GRIDPOINTS; i++)
 			{
-				coordiate(i, &it, &ix, &iy);
+				coordinate(i, &it, &ix, &iy);
 				j = idx(it, ix + nx, iy + ny);
 				c += G[i][j]*G[j][i];
 			}

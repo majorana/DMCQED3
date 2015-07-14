@@ -25,5 +25,6 @@ double S_G(int i);   //Action of the gauge fields
 double localS(int i); 
 
 double S_Gtx(int i);
+double S_Gxy(int i);
 
 #endif
