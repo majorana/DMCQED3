@@ -14,7 +14,7 @@
 /* ***************************************************************************************************************** */
 // global variables 
 
-double g_mu = 0.5;
+double g_mu = 1.0;
 double g_t = 1.0;
 double dt = 8.0/(double)Lt;
 double beta0  = 1.0;
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
   	/* Initialize the lattice geometry */
   	init_lattice(Lx, Ly, Lt);
   	/* Initialize the fields */
-  	coldstart();
+  	hotstart();
   	/* Print out the run parameters */
   	echo_sim_params();
 	
