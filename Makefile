@@ -1,7 +1,7 @@
 CC = gcc -std=c99 -pedantic -Wall -O3
 
 ifeq ($(OS),Windows_NT)
-	LINKER = gcc libblas.lib liblapack.lib liblapacke.lib 
+	LINKER = gcc -L./ -lblas -llapack -llapacke
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S), Linux)
