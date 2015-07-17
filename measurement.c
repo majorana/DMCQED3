@@ -9,8 +9,8 @@ complex double (*m_density_profile)[Lx*Ly];
 complex double (*m_density);
 complex double (*m_density_corr)[Lx][Ly];
 complex double (*m_polyakov)[Lx*Ly];
-complex double (*m_wilson)[Lx/2];
-complex double (*m_wilson_xy)[Lx/2][Ly/2];
+complex double (*m_wilson)[Lx];
+complex double (*m_wilson_xy)[Lx][Ly];
 
 void measurement_init()
 {
@@ -43,7 +43,7 @@ complex double polyakov_loop(int x, int y)
 }
 
 
-complex double wilson_loop_space1(int nx, int ny)
+complex double wilson_loop_xy1(int nx, int ny)
 {
 	// nx: spatial extension, say x direction
 	// nt: time extension
@@ -123,19 +123,19 @@ complex double wilson_loop1(int nx, int nt)
 void wilson_loop(int nt) 
 {
 	int i;
-	for (i = 0; i<Lx/2; i++)
+	for (i = 0; i<Lx; i++)
 	{
 		m_wilson[measure_iter][i] = wilson_loop1(i, nt);
 	}
 }
 
 // Wilson loop in the x-y plane
-void wilson_loop_space() 
+void wilson_loop_xy() 
 {
 	int i, j;
-	for (i = 0; i<Lx/2; i++)
-		for (j = 0; j<Ly/2; j++)
-			m_wilson_xy[measure_iter][i][j] = wilson_loop_space1(i, j);
+	for (i = 0; i<Lx; i++)
+		for (j = 0; j<Ly; j++)
+			m_wilson_xy[measure_iter][i][j] = wilson_loop_xy1(i, j);
 }
 
 void density(fmat G)

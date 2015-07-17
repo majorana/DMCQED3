@@ -27,7 +27,7 @@ void measurement_init();
 void measurement_finish();
 
 void wilson_loop(int nt);
-void wilson_loop_space();
+void wilson_loop_xy();
 void density(fmat G);
 void density_correlation(fmat G);
 double mean_plaq();

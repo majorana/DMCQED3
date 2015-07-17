@@ -20,9 +20,9 @@ double dt = 8.0/(double)Lt;
 double beta0  = 1.0;
 double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
-int g_thermalize   = 0;   //Number of MC updates for thermalization; probably ~ 1000 or even more is needed
-int g_measurements = 500;    //Number of measurements (statistically independent configurations)
-int g_intermediate =  5;    //Number of MC updates between the measurements
+int g_thermalize   = 0;   //Number of MC updates for thermalization; a few hundreds
+int g_measurements = 5;    //Number of measurements (statistically independent configurations)
+int g_intermediate =  1;    //Number of MC updates between the measurements
 
 /* ***************************************************************************************************************** */
 
@@ -68,7 +68,6 @@ int main(int argc, char **argv)
   	printf("\n Generation: \n\n");
 	measurement_init();
  	density(Minv);
-	wilson_loop(1);
 	printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
 	printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 
@@ -84,9 +83,9 @@ int main(int argc, char **argv)
 		/* doing measurement */
   		density(Minv);
 		density_correlation(Minv);
-		wilson_loop(4);
+		//wilson_loop(4);
+		wilson_loop_xy();
 		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
-		//printf("Wilson plaquette: \t %.5f %.5f\n", creal(m_wilson[measure_iter][1]), cimag(m_wilson[measure_iter][1]));
 		printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 		fflush(stdout);
 		measure_iter++;
@@ -127,11 +126,12 @@ void output_measurement()
 		fprintf(fp, "%.5f %.5f\n", creal(m_density[i]), cimag(m_density[i]));
 	fclose(fp);
 
-	fp = fopen("wilson.dat", "w");
+	fp = fopen("wilsonxy.dat", "w");
 	for(i = 0; i < g_measurements; i++)
 	{
 		for(j = 0; j < Lx/2; j++)
-			fprintf(fp, "\t %.5f %.5f", creal(m_wilson[i][j]), cimag(m_wilson[i][j]));
+			for(k = 0; k < Ly/2; k++)
+				fprintf(fp, "\t %.5f %.5f", creal(m_wilson_xy[i][j][k]), cimag(m_wilson_xy[i][j][k]));
 		fprintf(fp, "\n");
 	}
 	fclose(fp);
