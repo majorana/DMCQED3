@@ -20,8 +20,8 @@ extern int measure_iter;
 
 extern complex double (*m_density);
 extern complex double (*m_density_corr)[Lx][Ly];
-extern complex double (*m_wilson)[Lx/2];
-extern complex double (*m_wilson_xy)[Lx/2][Ly/2];
+extern complex double (*m_wilson)[Lx];
+extern complex double (*m_wilson_xy)[Lx][Ly];
 
 void measurement_init();
 void measurement_finish();

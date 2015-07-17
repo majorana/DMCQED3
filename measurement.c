@@ -18,8 +18,8 @@ void measurement_init()
 	m_density_profile = malloc(g_measurements*Lx*Ly*sizeof(complex double));
 	m_density = malloc(g_measurements*sizeof(complex double));
 	m_density_corr = malloc(g_measurements*Lx*Ly*sizeof(complex double));
-	m_wilson = malloc(g_measurements*(Lx/2)*sizeof(complex double));
-	m_wilson_xy = malloc(g_measurements*(Lx/2)*(Ly/2)*sizeof(complex double));
+	m_wilson = malloc(g_measurements*(Lx)*sizeof(complex double));
+	m_wilson_xy = malloc(g_measurements*(Lx)*(Ly)*sizeof(complex double));
 }
 
 void measurement_finish()
