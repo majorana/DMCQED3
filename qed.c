@@ -108,6 +108,7 @@ void echo_sim_params()
 	printf("\t Chemical potential:              %2.4lf\n",   g_mu);
  	printf("\t Beta0:                            %2.4lf\n",  beta0);
 	printf("\t Beta:                            %2.4lf\n",  beta);
+	printf("\t Temperature:                     %2.4lf\n", dt*Lt);
  	printf("\t Lattice size:                    %i x %i x %i\n", Lx, Ly, Lt);
  	printf("\t Thermalization steps:            %i\n",      g_thermalize);
  	printf("\t Number of measurements:          %i\n",      g_measurements);
