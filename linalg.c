@@ -4,8 +4,8 @@
 
 #ifdef __APPLE__ // on mac laptop
 	#include "lapack/lapacke.h"
-#elif __MINGW32__ // on windows laptop
-	#include "lapack/lapacke.h"
+//#elif __MINGW32__ // on windows laptop
+//	#include "lapack/lapacke.h"
 #elif __linux // on linux machine with MKL, Q1 cluster 
 	#include <mkl.h>
 #endif
