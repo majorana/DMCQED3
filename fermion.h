@@ -8,7 +8,7 @@
 
 #include "linalg.h"
 
-#define REINVERSE 30
+#define REINVERSE 80
 
 typedef complex double (*fmat)[GRIDPOINTS];
 

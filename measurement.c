@@ -4,13 +4,17 @@
 #include "lattice.h"
 #include "fields.h"
 #include "fermion.h"
+#include "mc.h"
 
 complex double (*m_density_profile)[Lx*Ly];
 complex double (*m_density);
 complex double (*m_density_corr)[Lx][Ly];
-complex double (*m_polyakov)[Lx*Ly];
-complex double (*m_wilson)[Lx];
 complex double (*m_wilson_xy)[Lx][Ly];
+complex double (*m_A)[3][GRIDPOINTS];
+
+void wilson_loop_xy();
+void density(fmat G);
+void density_correlation(fmat G);
 
 void measurement_init()
 {
@@ -18,8 +22,8 @@ void measurement_init()
 	m_density_profile = malloc(g_measurements*Lx*Ly*sizeof(complex double));
 	m_density = malloc(g_measurements*sizeof(complex double));
 	m_density_corr = malloc(g_measurements*Lx*Ly*sizeof(complex double));
-	m_wilson = malloc(g_measurements*(Lx)*sizeof(complex double));
 	m_wilson_xy = malloc(g_measurements*(Lx)*(Ly)*sizeof(complex double));
+	m_A = malloc(g_measurements*Lx*Ly*3*sizeof(complex double));
 }
 
 void measurement_finish()
@@ -27,19 +31,8 @@ void measurement_finish()
 	free(m_density_profile);
 	free(m_density);
 	free(m_density_corr);
-	free(m_wilson);
 	free(m_wilson_xy);
-}
-
-complex double polyakov_loop(int x, int y)
-{
-	// x, y are spatial coordinates
-	int i;
-	complex double Px;
-	Px = 1.0 + 0.0*I;
-	for(i = 0; i<Lt; i++)
-		Px *= Ut[idx(i, x, y)];
-	return Px;
+	free(m_A);
 }
 
 
@@ -81,53 +74,6 @@ complex double wilson_loop_xy1(int nx, int ny)
 	return avgw;
 }
 
-complex double wilson_loop1(int nx, int nt)
-{
-	// nx: spatial extension, say x direction
-	// nt: time extension
-	int i, j, kx, kt;
-	complex double w, avgw;
-	avgw = 0.0 + 0.0*I;
-	for(i = 0; i < GRIDPOINTS; i++)
-	{
-		j = i;
-		w = 1.0 + 0.0*I;
-		// going from j to j+ nx*e_x
-		for(kx = 0; kx < nx; kx++) {
-			w *= Ux[j];
-			j = xp[j];
-		}
-		// going from j+nx*e_x to j+nx*ex+nt*et
-		for(kt = 0; kt < nt; kt++) {
-			w *= Ut[j];
-			j = tp[j];
-		}
-		// going from j+nx*ex+nt*et back to j+nt*et
-		for(kx = 0; kx < nx; kx++) {
-			j = xm[j];
-			w *= cconj(Ux[j]);
-		}
-		// going from j+nt*et back to j
-		for(kt = 0; kt < nt; kt++) {
-			j = tm[j];
-			w *= cconj(Ut[j]);
-		}
-		avgw += w;
-	}
-	avgw /= GRIDPOINTS;
-	//printf("Wilson loop: \t %.4f+I*%.4f\n", creal(avgw), cimag(avgw));
-	return avgw;
-}
-
-// Wilson loop in the t-x plane
-void wilson_loop(int nt) 
-{
-	int i;
-	for (i = 0; i<Lx; i++)
-	{
-		m_wilson[measure_iter][i] = wilson_loop1(i, nt);
-	}
-}
 
 // Wilson loop in the x-y plane
 void wilson_loop_xy() 
@@ -175,7 +121,7 @@ double mean_plaq()
 // <n_i n_j> = <c_i^\dag c_i c_j^\dag c_j> = <n_i><n_j> - <c_i^\dag c_j><c_j^\dag c_i>. The second term is the connected component 
 // calculate 1/N\sum_x n(x) n(x+y), also average over time
 // update(07/09): should get the full dynamical density-density response function?
-void density_correlation(fmat G)
+void density_corr(fmat G)
 {
 	int it, ix, iy, i, j;
 	int nx, ny;
@@ -197,5 +143,49 @@ void density_correlation(fmat G)
 	return;
 }
 
+void measure()
+{
+	int i;
+	density(Minv);
+	density_corr(Minv);
+	for(i=0; i<GRIDPOINTS; i++) 
+	{
+		m_A[measure_iter][0][i] = At[i];
+		m_A[measure_iter][1][i] = Ax[i];
+		m_A[measure_iter][2][i] = Ay[i];
+	}
+	measure_iter++;
+}
+
+void output_measurement()
+{
+	int i, j, k;
+	FILE *fp;
+
+	fp = fopen("density.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+		fprintf(fp, "%.5f %.5f\n", creal(m_density[i]), cimag(m_density[i]));
+	fclose(fp);
+
+	fp = fopen("wilsonxy.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+	{
+		for(j = 0; j < Lx/2; j++)
+			for(k = 0; k < Ly/2; k++)
+				fprintf(fp, "\t %.5f %.5f", creal(m_wilson_xy[i][j][k]), cimag(m_wilson_xy[i][j][k]));
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+	
+	fp = fopen("density_corr.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+	{
+		for(j = 0; j < Lx; j++)
+			for(k = 0; k < Ly; k++)
+				fprintf(fp, "\t %.5f %.5f", creal(m_density_corr[i][j][k]), cimag(m_density_corr[i][j][k]) );
+		fprintf(fp, "\n");
+	}
+	fclose(fp);
+}
 
 

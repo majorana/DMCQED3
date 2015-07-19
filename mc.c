@@ -32,7 +32,6 @@ void mc_update() //Basic MC update step
   	double r[1], rA[1];
 
 	acc = 0;
-	/*
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
 		// propose a change
@@ -76,7 +75,6 @@ void mc_update() //Basic MC update step
 			}
 		}
 	}
-	*/
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
 		// propose a change

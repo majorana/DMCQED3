@@ -30,10 +30,6 @@ int measure_iter = 0;
 
 void echo_sim_params();
 
-void output_measurement();
-
-void test();
-
 int main(int argc, char **argv) 
 {
 	int i, l;
@@ -67,7 +63,7 @@ int main(int argc, char **argv)
 
   	printf("\n Generation: \n\n");
 	measurement_init();
- 	density(Minv);
+	measure();
 	printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
 	printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 
@@ -81,13 +77,10 @@ int main(int argc, char **argv)
    		mc_update();
 
 		/* doing measurement */
-  		density(Minv);
-		//density_correlation(Minv);
-		//wilson_loop_xy();
+		measure();
 		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
 		printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 		fflush(stdout);
-		measure_iter++;
   	};
 	output_measurement();
  	measurement_finish();
@@ -114,37 +107,6 @@ void echo_sim_params()
  	printf("\t MC updates between measurements: %i\n",      g_intermediate);
 	printf("\n\n");
 	fflush(stdout);
-}
-
-void output_measurement()
-{
-	int i, j, k;
-	FILE *fp;
-
-	fp = fopen("density.dat", "w");
-	for(i = 0; i < g_measurements; i++)
-		fprintf(fp, "%.5f %.5f\n", creal(m_density[i]), cimag(m_density[i]));
-	fclose(fp);
-
-	fp = fopen("wilsonxy.dat", "w");
-	for(i = 0; i < g_measurements; i++)
-	{
-		for(j = 0; j < Lx/2; j++)
-			for(k = 0; k < Ly/2; k++)
-				fprintf(fp, "\t %.5f %.5f", creal(m_wilson_xy[i][j][k]), cimag(m_wilson_xy[i][j][k]));
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
-	
-	fp = fopen("density_corr.dat", "w");
-	for(i = 0; i < g_measurements; i++)
-	{
-		for(j = 0; j < Lx; j++)
-			for(k = 0; k < Ly; k++)
-				fprintf(fp, "\t %.5f %.5f", creal(m_density_corr[i][j][k]), cimag(m_density_corr[i][j][k]) );
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
 }
 
 void test()
