@@ -166,16 +166,6 @@ void output_measurement()
 	for(i = 0; i < g_measurements; i++)
 		fprintf(fp, "%.5f %.5f\n", creal(m_density[i]), cimag(m_density[i]));
 	fclose(fp);
-
-	fp = fopen("wilsonxy.dat", "w");
-	for(i = 0; i < g_measurements; i++)
-	{
-		for(j = 0; j < Lx/2; j++)
-			for(k = 0; k < Ly/2; k++)
-				fprintf(fp, "\t %.5f %.5f", creal(m_wilson_xy[i][j][k]), cimag(m_wilson_xy[i][j][k]));
-		fprintf(fp, "\n");
-	}
-	fclose(fp);
 	
 	fp = fopen("density_corr.dat", "w");
 	for(i = 0; i < g_measurements; i++)

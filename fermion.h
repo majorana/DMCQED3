@@ -8,7 +8,7 @@
 
 #include "linalg.h"
 
-#define REINVERSE 80
+#define REINVERSE 100
 
 typedef complex double (*fmat)[GRIDPOINTS];
 
@@ -22,8 +22,6 @@ complex double det_ratio_xy(const int i, fmat A);
 //void quick_update_inverse(int i, fmat in, fmat temp);
 void hard_inverse(fmat M);
 void update_inverse(int i, fmat M);
-
-extern int up_counter;
 
 // for test
 extern complex double Minv1[GRIDPOINTS][GRIDPOINTS];
