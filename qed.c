@@ -21,7 +21,7 @@ double beta0  = 1.0;
 double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
 int g_thermalize   = 0;   //Number of MC updates for thermalization; a few hundreds
-int g_measurements = 5;    //Number of measurements (statistically independent configurations)
+int g_measurements = 100;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  1;    //Number of MC updates between the measurements
 
 /* ***************************************************************************************************************** */
@@ -82,9 +82,8 @@ int main(int argc, char **argv)
 
 		/* doing measurement */
   		density(Minv);
-		density_correlation(Minv);
-		//wilson_loop(4);
-		wilson_loop_xy();
+		//density_correlation(Minv);
+		//wilson_loop_xy();
 		printf("Average density: \t %.5f %.5f\n", creal(m_density[measure_iter]), cimag(m_density[measure_iter]));
 		printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 		fflush(stdout);

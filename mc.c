@@ -21,7 +21,7 @@ void mc_init()
 	emu = exp(-g_mu*dt);
 	up_counter = 0;
 	hard_inverse(Minv);
-	range = 3.0;
+	range = 4.0;
 }
 
 void mc_update() //Basic MC update step
@@ -32,6 +32,7 @@ void mc_update() //Basic MC update step
   	double r[1], rA[1];
 
 	acc = 0;
+	/*
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
 		// propose a change
@@ -43,6 +44,8 @@ void mc_update() //Basic MC update step
 		phi = range*(2.0*rA[0] - 1.0);
 		Ut[i] *= (1.0+I*phi)/sqrt(1.0+phi*phi);
 		At[i] += atan(phi);
+		//At[i] = 2*M_PI*rA[0];
+		Ut[i] = cos(At[i]) + I*sin(At[i]);
 
 	
 		S1 = localS(i);
@@ -73,7 +76,7 @@ void mc_update() //Basic MC update step
 			}
 		}
 	}
-	
+	*/
 	for(i = 0; i<GRIDPOINTS; i++) 
 	{
 		// propose a change
@@ -86,6 +89,8 @@ void mc_update() //Basic MC update step
 		phi = range*(2.0*rA[0] - 1.0);
 		Ux[i] *= (1.0+I*phi)/sqrt(1.0+phi*phi);
 		Ax[i] += atan(phi);
+		//Ax[i] = 2*M_PI*rA[0];
+		//Ux[i] = cos(Ax[i]) + I*sin(Ax[i]);
 
 	
 		S1 = localS(i);
@@ -127,6 +132,8 @@ void mc_update() //Basic MC update step
 		phi = range*(2.0*rA[0] - 1.0);
 		Uy[i] *= (1.0+I*phi)/sqrt(1.0+phi*phi);
 		Ay[i] += atan(phi); 
+		//Ay[i] = 2*M_PI*rA[0];
+		//Uy[i] = cos(Ay[i]) + I*sin(Ay[i]);
 
 	
 		S1 = localS(i);
@@ -134,7 +141,6 @@ void mc_update() //Basic MC update step
 		rdet = det_ratio_xy(i, Minv);
 		//rdet = 1.0;
 		prob = cconj(rdet)*rdet*exp(S0-S1);
-		//printf("%.8f\n", cabs(rdet));
  	 	if(prob >= 1) {
     		R += 1;
 			acc++;
