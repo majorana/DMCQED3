@@ -20,8 +20,8 @@ double dt = 8.0/(double)Lt;
 double beta0  = 1.0;
 double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
-int g_thermalize   = 0;   //Number of MC updates for thermalization; a few hundreds
-int g_measurements = 100;    //Number of measurements (statistically independent configurations)
+int g_thermalize   = 1;   //Number of MC updates for thermalization; a few hundreds
+int g_measurements = 0;    //Number of measurements (statistically independent configurations)
 int g_intermediate =  1;    //Number of MC updates between the measurements
 
 /* ***************************************************************************************************************** */
@@ -35,6 +35,7 @@ int main(int argc, char **argv)
 	int i, l;
   	int accepted = 0;        //Total number of accepted configurations
   	int total_updates = 0;   //Total number of updates
+	clock_t begin, end;
 
   	/* Initialize the random number generator */
   	rlxd_init(2, time(NULL)); 
@@ -45,18 +46,20 @@ int main(int argc, char **argv)
   	/* Print out the run parameters */
   	echo_sim_params();
 	
-	//test();
-	//return 0;
-
 	mc_init();
   	/* thermalization */
   	mc_iter = 0; //Counts the total number of calls to the update() routine
   	printf("\n Thermalization: \n\n");
+
+	//begin = clock();
   	for(i=0; i<g_thermalize; i++)
   	{
    		mc_update();
 		//printf("\t Step %04i\n", i);
   	};
+	//end = clock();
+	//printf("Time for one MC update: %f\n", (double)(end - begin) / CLOCKS_PER_SEC);
+
 	/* measure the iterations only during real simulation, not thermalization */
   	R              = 0; //Counts the total number of accepted configurations
   	mc_iter       = 0; //Counts the total number of calls to the update() routine

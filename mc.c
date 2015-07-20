@@ -19,7 +19,6 @@ complex double Minv[GRIDPOINTS][GRIDPOINTS];
 void mc_init()
 {
 	emu = exp(-g_mu*dt);
-	up_counter = 0;
 	hard_inverse(Minv);
 	range = 4.0;
 }
