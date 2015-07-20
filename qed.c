@@ -20,9 +20,9 @@ double dt = 8.0/(double)Lt;
 double beta0  = 1.0;
 double beta   = 2.0;        //Coupling constant for the gauge field, allow anisotropy between space and time. This is a non-relativistic system.
 
-int g_thermalize   = 1;   //Number of MC updates for thermalization; a few hundreds
-int g_measurements = 0;    //Number of measurements (statistically independent configurations)
-int g_intermediate =  1;    //Number of MC updates between the measurements
+int g_thermalize   = 0;   //Number of MC updates for thermalization; a few hundreds
+int g_measurements = 1;    //Number of measurements (statistically independent configurations)
+int g_intermediate =  0;    //Number of MC updates between the measurements
 
 /* ***************************************************************************************************************** */
 
@@ -85,6 +85,7 @@ int main(int argc, char **argv)
 		printf("Wilson plaquette: \t %.5f\n", mean_plaq());
 		fflush(stdout);
   	};
+	printf("Wrapping up...\n");
 	output_measurement();
  	measurement_finish();
 	
@@ -115,7 +116,7 @@ void echo_sim_params()
 void test()
 {
 	int i;
-	complex double detr, det1, det2;
+	complex double detr;
 	double rA[2];
 
 
@@ -127,12 +128,12 @@ void test()
 		//Ax[i] += rA[0];
 		//Ay[i] += rA[1];
 		calculatelinkvars();
-		det1 = det2;
+		//det1 = det2;
 		//det2 = hard_inverse(Minv2);
 		detr = det_ratio_t(i, Minv1);
 		update_inverse(i, Minv1); 
 		printf("%.12f+ I*%.12f, %.12f\n", creal(detr), cimag(detr), cabs(detr));
-		printf("%.12f+ I*%.12f, %.12f\n\n", creal(det2/det1), cimag(det2/det1), cabs(det2/det1));
+		//printf("%.12f+ I*%.12f, %.12f\n\n", creal(det2/det1), cimag(det2/det1), cabs(det2/det1));
 		//printf("%g\n", matrix_diff(Minv1, Minv2));
 	}
 

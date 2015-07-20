@@ -5,9 +5,9 @@
 /***** This unit defines lattice geometry  *****/
 /***********************************************/    
 
-#define Lx (10)                                       
-#define Ly (10)                                      
-#define Lt (16)
+#define Lx (6)                                       
+#define Ly (6)                                      
+#define Lt (6)
 #define GRIDPOINTS (Lx*Ly*Lt)                           //Total number of lattice sites
 
 extern int xp[GRIDPOINTS];

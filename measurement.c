@@ -10,7 +10,9 @@ complex double (*m_density_profile)[Lx*Ly];
 complex double (*m_density);
 complex double (*m_density_corr)[Lx][Ly];
 complex double (*m_wilson_xy)[Lx][Ly];
-complex double (*m_A)[3][GRIDPOINTS];
+double (*m_At)[GRIDPOINTS];
+double (*m_Ax)[GRIDPOINTS];
+double (*m_Ay)[GRIDPOINTS];
 
 void wilson_loop_xy();
 void density(fmat G);
@@ -23,7 +25,10 @@ void measurement_init()
 	m_density = malloc(g_measurements*sizeof(complex double));
 	m_density_corr = malloc(g_measurements*Lx*Ly*sizeof(complex double));
 	m_wilson_xy = malloc(g_measurements*(Lx)*(Ly)*sizeof(complex double));
-	m_A = malloc(g_measurements*Lx*Ly*3*sizeof(complex double));
+	m_At = malloc(g_measurements*GRIDPOINTS*sizeof(double));
+	m_Ax = malloc(g_measurements*GRIDPOINTS*sizeof(double));
+	m_Ay = malloc(g_measurements*GRIDPOINTS*sizeof(double));
+
 }
 
 void measurement_finish()
@@ -32,7 +37,9 @@ void measurement_finish()
 	free(m_density);
 	free(m_density_corr);
 	free(m_wilson_xy);
-	free(m_A);
+	free(m_At);
+	free(m_Ax);
+	free(m_Ay);
 }
 
 
@@ -150,9 +157,9 @@ void measure()
 	density_corr(Minv);
 	for(i=0; i<GRIDPOINTS; i++) 
 	{
-		m_A[measure_iter][0][i] = At[i];
-		m_A[measure_iter][1][i] = Ax[i];
-		m_A[measure_iter][2][i] = Ay[i];
+		m_At[measure_iter][i] = At[i];
+		m_Ax[measure_iter][i] = Ax[i];
+		m_Ay[measure_iter][i] = Ay[i];
 	}
 	measure_iter++;
 }
@@ -160,6 +167,7 @@ void measure()
 void output_measurement()
 {
 	int i, j, k;
+	double diff;
 	FILE *fp;
 
 	fp = fopen("density.dat", "w");
@@ -174,6 +182,27 @@ void output_measurement()
 			for(k = 0; k < Ly; k++)
 				fprintf(fp, "\t %.5f %.5f", creal(m_density_corr[i][j][k]), cimag(m_density_corr[i][j][k]) );
 		fprintf(fp, "\n");
+	}
+	fclose(fp);
+
+	fp = fopen("gauget.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+	{
+		fwrite(m_At[i], sizeof(double), GRIDPOINTS, fp);
+	}
+	fclose(fp);
+	
+	fp = fopen("gaugex.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+	{
+		fwrite(m_Ax[i], sizeof(double), GRIDPOINTS, fp);
+	}
+	fclose(fp);
+	
+	fp = fopen("gaugey.dat", "w");
+	for(i = 0; i < g_measurements; i++)
+	{
+		fwrite(m_Ay[i], sizeof(double), GRIDPOINTS, fp);
 	}
 	fclose(fp);
 }
